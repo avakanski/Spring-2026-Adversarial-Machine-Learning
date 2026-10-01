@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Qwen3 RL-Based Reasoning Fine-Tuning on MATH-500 – Adversarial Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<link href="../../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" rel="next">
+<link href="../../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" rel="prev">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-e90d6670a4065f2536ac3afd6750ccb9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-49b554886c5cde5beb8c9f2b2757bc5f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-e90d6670a4065f2536ac3afd6750ccb9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../Codes/Code_Examples.html">Code Examples</a></li><li class="breadcrumb-item"><a href="../../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf">Hello World of ML</a></li><li class="breadcrumb-item"><a href="../../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html">Qwen3 GRPO on MATH-500</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../../">Adversarial Machine Learning</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning" title="GitHub repository" class="quarto-navigation-tool px-1" aria-label="GitHub repository"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Information</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html#previous-offerings" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Previous Offerings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html#course-syllabus" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syllabus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html#course-description" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Description</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html#textbooks" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Textbooks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html#learning-outcomes" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Learning Outcomes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html#prerequisites" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prerequisites</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html#grading" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Grading</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../index.html#course-schedule" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Schedule</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_1-Introduction_to_AML/Lecture_1-Introduction_to_AML.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 1 - Introduction to AML</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 1 - Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_2-Deep_Learning_Overview/Lecture_2-Deep_Learning_Overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 2 - Deep Learning Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_3-Mathematics_for_ML/Lecture_3-Mathematics_for_ML.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 3 - Mathematics for Machine Learning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 2 - Evasion Attacks</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_4-White-box_Evasion_Attacks/Lecture_4-White-box_Evasion_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 4 - White-box Evasion Attacks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_5-Black-box_Evasion_Attacks/Lecture_5-Black-box_Evasion_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 5 - Black-box Evasion Attacks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 3 - Large Language Models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_6-Introduction_to_LLMs/Lecture_6-Introduction_to_LLMs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 6 - Introduction to LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_7-Adversarial_Attacks_on_LLMs/Lecture_7-Adversarial_Attacks_on_LLMs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 7 - Adversarial Attacks on LLMs</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 4 - Defenses and Poisoning Attacks</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_8-Defenses_Against_Evasion_Attacks/Lecture_8-Defenses_Against_Evasion_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 8 - Defenses Against Evasion Attacks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_9-Poisoning_Attacks_and_Defenses/Lecture_9-Poisoning_Attacks_and_Defenses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 9 - Poisoning Attacks and Defenses</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 5 - AML in Cybersecurity</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_10-AML_in_Network_Intrusion_Detection/Lecture_10-AML_in_Network_Intrusion_Detection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 10 - Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_11-AML_in_Malware_Detection/Lecture_11-AML_in_Malware_Detection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 11 - Malware Detection and Classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_12-AML_in_Spam_Filtering_URL_Detection_CPS/Lecture_12-AML_in_Spam_Filtering_URL_Detection_CPS.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 12 - Spam Filtering, URL Detection, Cyber-physical Systems</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 6 - Privacy, Explainability, Fairness</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_13-Privacy_Attacks_and_Defenses/Lecture_13-Privacy_Attacks_and_Defenses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 13 - Privacy Attacks and Defenses</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_14-Explainability_in_ML/Lecture_14-Explainability_in_ML.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 14 - Explainability in Machine Learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Lectures/Lecture_15-Bias_and_Fairness_in_ML/Lecture_15-Bias_and_Fairness_in_ML.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 15 - Bias and Fairness in Machine Learning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../../Codes/Code_Examples.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Code Examples</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Code_Examples.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/FGSM_Function_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FGSM Attack in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/White_Box_Evasion_Attacks_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/White_Box_Evasion_Attacks_PyTorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Black-box_Boundary_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Black-box Boundary Attack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/LLM_Supervised_Finetuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLM Supervised Fine-tuning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Jailbreak_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jailbreak Attacks on LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Adversarial_Training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adversarial Training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Intrusion_Detection_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Attack on Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true">
+ <span class="menu-text">Hello World of ML</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview (PDF)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic Regression on Iris</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random Forest on Breast Cancer</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/XGBoost_on_Titanic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">XGBoost on Titanic</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/MLPs_on_MNIST.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MLPs on MNIST</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/ResNet_on_CIFAR10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ResNet on CIFAR-10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/DistilBERT_on_IMDb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DistilBERT on IMDb</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llama 2 on Alpaca</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Qwen3 GRPO on MATH-500</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VLM Reasoning and Tool Use on MATH-500</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/FGSM_Function_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FGSM Attack in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/White_Box_Evasion_Attacks_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/White_Box_Evasion_Attacks_PyTorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Black-box_Boundary_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Black-box Boundary Attack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/LLM_Supervised_Finetuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLM Supervised Fine-tuning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Jailbreak_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jailbreak Attacks on LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Adversarial_Training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adversarial Training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Intrusion_Detection_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Attack on Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">Hello World of ML</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview (PDF)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic Regression on Iris</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random Forest on Breast Cancer</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/XGBoost_on_Titanic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">XGBoost on Titanic</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/MLPs_on_MNIST.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MLPs on MNIST</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/ResNet_on_CIFAR10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ResNet on CIFAR-10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/DistilBERT_on_IMDb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DistilBERT on IMDb</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llama 2 on Alpaca</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Qwen3 GRPO on MATH-500</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VLM Reasoning and Tool Use on MATH-500</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/FGSM_Function_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FGSM Attack in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/White_Box_Evasion_Attacks_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/White_Box_Evasion_Attacks_PyTorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Black-box_Boundary_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Black-box Boundary Attack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/LLM_Supervised_Finetuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLM Supervised Fine-tuning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Jailbreak_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jailbreak Attacks on LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Adversarial_Training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adversarial Training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Intrusion_Detection_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Attack on Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Hello World of ML</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview (PDF)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic Regression on Iris</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random Forest on Breast Cancer</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/XGBoost_on_Titanic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">XGBoost on Titanic</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/MLPs_on_MNIST.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MLPs on MNIST</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/ResNet_on_CIFAR10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ResNet on CIFAR-10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/DistilBERT_on_IMDb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DistilBERT on IMDb</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llama 2 on Alpaca</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Qwen3 GRPO on MATH-500</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VLM Reasoning and Tool Use on MATH-500</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#dataset-math-500" id="toc-dataset-math-500" class="nav-link active" data-scroll-target="#dataset-math-500">Dataset: MATH-500</a></li>
+  <li><a href="#install-dependencies" id="toc-install-dependencies" class="nav-link" data-scroll-target="#install-dependencies">Install Dependencies</a></li>
+  <li><a href="#import-modules" id="toc-import-modules" class="nav-link" data-scroll-target="#import-modules">Import Modules</a></li>
+  <li><a href="#load-the-math-500-dataset" id="toc-load-the-math-500-dataset" class="nav-link" data-scroll-target="#load-the-math-500-dataset">Load the MATH-500 Dataset</a></li>
+  <li><a href="#reward-functions" id="toc-reward-functions" class="nav-link" data-scroll-target="#reward-functions">Reward Functions</a></li>
+  <li><a href="#format-the-dataset-for-grpo" id="toc-format-the-dataset-for-grpo" class="nav-link" data-scroll-target="#format-the-dataset-for-grpo">Format the Dataset for GRPO</a></li>
+  <li><a href="#quantization-configuration-4-bit-qlora" id="toc-quantization-configuration-4-bit-qlora" class="nav-link" data-scroll-target="#quantization-configuration-4-bit-qlora">Quantization Configuration (4-bit QLoRA)</a></li>
+  <li><a href="#load-the-base-model-and-tokenizer" id="toc-load-the-base-model-and-tokenizer" class="nav-link" data-scroll-target="#load-the-base-model-and-tokenizer">Load the Base Model and Tokenizer</a></li>
+  <li><a href="#apply-lora-parameter-efficient-fine-tuning" id="toc-apply-lora-parameter-efficient-fine-tuning" class="nav-link" data-scroll-target="#apply-lora-parameter-efficient-fine-tuning">Apply LoRA (Parameter-Efficient Fine-Tuning)</a></li>
+  <li><a href="#grpo-training-configuration" id="toc-grpo-training-configuration" class="nav-link" data-scroll-target="#grpo-training-configuration">GRPO Training Configuration</a></li>
+  <li><a href="#rl-training-with-grpotrainer" id="toc-rl-training-with-grpotrainer" class="nav-link" data-scroll-target="#rl-training-with-grpotrainer">RL Training with GRPOTrainer</a></li>
+  <li><a href="#inference-with-the-fine-tuned-model" id="toc-inference-with-the-fine-tuned-model" class="nav-link" data-scroll-target="#inference-with-the-fine-tuned-model">Inference with the Fine-Tuned Model</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../Codes/Code_Examples.html">Code Examples</a></li><li class="breadcrumb-item"><a href="../../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf">Hello World of ML</a></li><li class="breadcrumb-item"><a href="../../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html">Qwen3 GRPO on MATH-500</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Qwen3 RL-Based Reasoning Fine-Tuning on MATH-500</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>This notebook demonstrates how to fine-tune Qwen3-1.7B for mathematical reasoning on the MATH-500 benchmark using Group Relative Policy Optimization (GRPO).</p>
+<section id="dataset-math-500" class="level3">
+<h3 class="anchored" data-anchor-id="dataset-math-500">Dataset: MATH-500</h3>
+<p>MATH-500 is a curated subset of 500 problems from the full MATH benchmark, covering competition-level mathematics in 7 subjects (algebra, geometry, number theory, etc.). Each example contains: - <code>problem</code>: the mathematical question. - <code>solution</code>: the reference solution (used for answer extraction only, not shown to the model during training). - <code>answer</code>: the final answer extracted from the solution. - <code>subject</code> / <code>level</code>: metadata about the problem domain and difficulty.</p>
+</section>
+<section id="install-dependencies" class="level2">
+<h2 class="anchored" data-anchor-id="install-dependencies">Install Dependencies</h2>
+<div id="XnIVGspFusp3" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install required libraries</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># transformers : Hugging Face model hub and training utilities</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># datasets     : easy dataset loading and preprocessing</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># peft         : parameter-efficient fine-tuning (LoRA)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># bitsandbytes : 4-bit / 8-bit quantization kernels</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># trl          : GRPOTrainer for RL-based fine-tuning</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># accelerate   : distributed / mixed-precision training</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install <span class="op">-</span>q transformers datasets peft bitsandbytes trl accelerate</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># for symbolic answer comparison</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install <span class="op">-</span>q latex2sympy2 sympy</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="import-modules" class="level2">
+<h2 class="anchored" data-anchor-id="import-modules">Import Modules</h2>
+<div id="TxQIbIcXusp4" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Hugging Face libraries</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datasets <span class="im">import</span> load_dataset</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># LoRA / PEFT</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> peft <span class="im">import</span> LoraConfig, get_peft_model, prepare_model_for_kbit_training</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># RL trainer</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> trl <span class="im">import</span> GRPOConfig, GRPOTrainer</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="load-the-math-500-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="load-the-math-500-dataset">Load the MATH-500 Dataset</h2>
+<div id="d-1XaT1Qusp4" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the 'test' split of MATH-500 from the Hugging Face Hub</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> load_dataset(<span class="st">"HuggingFaceH4/MATH-500"</span>, split<span class="op">=</span><span class="st">"test"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># MATH-500 is a fixed subset of 500 problems</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> dataset.select(<span class="bu">range</span>(<span class="dv">500</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="dP28dReZvK8C" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1772290172813,&quot;user_tz&quot;:420,&quot;elapsed&quot;:11,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="ad6d2095-f0cb-430e-b134-0589244f15ac">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the dataset and the column names</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(dataset)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(dataset.column_names)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Dataset({
+    features: ['problem', 'solution', 'answer', 'subject', 'level', 'unique_id'],
+    num_rows: 500
+})
+['problem', 'solution', 'answer', 'subject', 'level', 'unique_id']</code></pre>
+</div>
+</div>
+<div id="HwVsCxAIusp5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1772290172833,&quot;user_tz&quot;:420,&quot;elapsed&quot;:4,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="842e464f-cad6-435c-8a05-816ab7060641">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect the first sample</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>sample <span class="op">=</span> dataset[<span class="dv">0</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Subject:"</span>, sample[<span class="st">'subject'</span>])</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Level:"</span>, sample[<span class="st">'level'</span>])</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Problem:"</span>, sample[<span class="st">'problem'</span>])</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Solution:"</span>, sample[<span class="st">'solution'</span>][:<span class="dv">800</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Subject: Precalculus
+Level: 2
+Problem: Convert the point $(0,3)$ in rectangular coordinates to polar coordinates.  Enter your answer in the form $(r,\theta),$ where $r &gt; 0$ and $0 \le \theta &lt; 2 \pi.$
+Solution: We have that $r = \sqrt{0^2 + 3^2} = 3.$  Also, if we draw the line connecting the origin and $(0,3),$ this line makes an angle of $\frac{\pi}{2}$ with the positive $x$-axis.
+
+[asy]
+unitsize(0.8 cm);
+
+draw((-0.5,0)--(3.5,0));
+draw((0,-0.5)--(0,3.5));
+draw(arc((0,0),3,0,90),red,Arrow(6));
+
+dot((0,3), red);
+label("$(0,3)$", (0,3), W);
+dot((3,0), red);
+[/asy]
+
+Therefore, the polar coordinates are $\boxed{\left( 3, \frac{\pi}{2} \right)}.$</code></pre>
+</div>
+</div>
+</section>
+<section id="reward-functions" class="level2">
+<h2 class="anchored" data-anchor-id="reward-functions">Reward Functions</h2>
+<p>GRPO learns by sampling multiple responses for each prompt, then using scalar reward signals to rank them. We define two complementary reward functions:</p>
+<p>Reward - <code>correctness_reward</code>: +2.0 if the final answer matches the reference, 0.0 otherwise. - <code>format_reward</code>: +0.5 if the model wraps its reasoning in <code>&lt;think&gt;…&lt;/think&gt;</code> tags.</p>
+<p>These rewards encourage the model to produce correct answers, and show its reasoning explicitly.</p>
+<div id="PfVRLTGWusp5" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> extract_boxed_answer(text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span> <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Extract the content of the answer in </span><span class="ch">\\</span><span class="co">boxed{}."""</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    key <span class="op">=</span> <span class="vs">r"</span><span class="dv">\b</span><span class="vs">oxed{"</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> []</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    idx <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="va">True</span>:</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        start <span class="op">=</span> text.find(key, idx)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> start <span class="op">==</span> <span class="op">-</span><span class="dv">1</span>:</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Walk forward counting braces to find the matching closing brace</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        depth <span class="op">=</span> <span class="dv">1</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        i <span class="op">=</span> start <span class="op">+</span> <span class="bu">len</span>(key)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> i <span class="op">&lt;</span> <span class="bu">len</span>(text) <span class="kw">and</span> depth <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> text[i] <span class="op">==</span> <span class="st">"{"</span>:</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>                depth <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">elif</span> text[i] <span class="op">==</span> <span class="st">"}"</span>:</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>                depth <span class="op">-=</span> <span class="dv">1</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>            i <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        results.append(text[start <span class="op">+</span> <span class="bu">len</span>(key) : i <span class="op">-</span> <span class="dv">1</span>].strip())</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        idx <span class="op">=</span> i</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> results[<span class="op">-</span><span class="dv">1</span>] <span class="cf">if</span> results <span class="cf">else</span> <span class="va">None</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> correctness_reward(prompts, completions, answer, <span class="op">**</span>kwargs) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">float</span>]:</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co">    Reward +2.0 if the model's boxed answer matches the reference answer,</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co">    else 0.0.  Both answers are compared after stripping whitespace.</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    rewards <span class="op">=</span> []</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> completion, ref <span class="kw">in</span> <span class="bu">zip</span>(completions, answer):</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># completions is a list of lists (one list of messages per sample)</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>        response_text <span class="op">=</span> completion[<span class="dv">0</span>][<span class="st">"content"</span>]</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>        predicted <span class="op">=</span> extract_boxed_answer(response_text)</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>        ref_clean  <span class="op">=</span> ref.strip()</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> predicted <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> predicted <span class="op">==</span> ref_clean:</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>            rewards.append(<span class="fl">2.0</span>)</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>            rewards.append(<span class="fl">0.0</span>)</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rewards</span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> format_reward(prompts, completions, <span class="op">**</span>kwargs) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">float</span>]:</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="co">    Reward +0.5 if the response contains explicit &lt;think&gt;…&lt;/think&gt; reasoning</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="co">    tags, encouraging the model to show its work.</span></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>    rewards <span class="op">=</span> []</span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>    pattern <span class="op">=</span> re.<span class="bu">compile</span>(<span class="vs">r"&lt;think&gt;</span><span class="dv">.</span><span class="op">*?</span><span class="vs">&lt;/think&gt;"</span>, re.DOTALL)</span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> completion <span class="kw">in</span> completions:</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>        response_text <span class="op">=</span> completion[<span class="dv">0</span>][<span class="st">"content"</span>]</span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a>        rewards.append(<span class="fl">0.5</span> <span class="cf">if</span> pattern.search(response_text) <span class="cf">else</span> <span class="fl">0.0</span>)</span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rewards</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="format-the-dataset-for-grpo" class="level2">
+<h2 class="anchored" data-anchor-id="format-the-dataset-for-grpo">Format the Dataset for GRPO</h2>
+<div id="VZBc1Yu9usp6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>SYSTEM_PROMPT <span class="op">=</span> (</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"You are a mathematical reasoning assistant. "</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Think step-by-step inside &lt;think&gt;…&lt;/think&gt; tags, then write your final answer "</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"inside a LaTeX </span><span class="ch">\\</span><span class="st">boxed</span><span class="sc">{}</span><span class="st"> command."</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> format_example(example):</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Convert a MATH-500 row into the chat-message format expected by GRPOTrainer.</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">    GRPOTrainer expects a 'prompt' column containing a list of message dicts.</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co">    We also keep the reference 'answer' column for the reward function.</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract the boxed answer from the full solution to use as ground truth</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    ref_answer <span class="op">=</span> extract_boxed_answer(example[<span class="st">"solution"</span>]) <span class="kw">or</span> example[<span class="st">"solution"</span>][<span class="op">-</span><span class="dv">50</span>:]</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"prompt"</span>: [</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>            {<span class="st">"role"</span>: <span class="st">"system"</span>,  <span class="st">"content"</span>: SYSTEM_PROMPT},</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>            {<span class="st">"role"</span>: <span class="st">"user"</span>,    <span class="st">"content"</span>: example[<span class="st">"problem"</span>]},</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        ],</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"answer"</span>: ref_answer,</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="EABJG9TD0m4o" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply formatting and keep only the columns GRPOTrainer needs</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> dataset.<span class="bu">map</span>(format_example, remove_columns<span class="op">=</span>dataset.column_names)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="Aw81v4-K03EL" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1772332447684,&quot;user_tz&quot;:420,&quot;elapsed&quot;:16,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="20d97d8f-6bca-4781-a780-8c5ea228f56e">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First prompt messages</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> msg <span class="kw">in</span> dataset[<span class="dv">0</span>][<span class="st">"prompt"</span>]:</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  [</span><span class="sc">{</span>msg[<span class="st">'role'</span>]<span class="sc">}</span><span class="ss">] </span><span class="sc">{</span>msg[<span class="st">'content'</span>][:<span class="dv">120</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Reference answer:"</span>, dataset[<span class="dv">0</span>][<span class="st">"answer"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [system] You are a mathematical reasoning assistant. Think step-by-step inside &lt;think&gt;…&lt;/think&gt; tags, then write your final answe
+  [user] Convert the point $(0,3)$ in rectangular coordinates to polar coordinates.  Enter your answer in the form $(r,\theta),$ 
+Reference answer: tes are $\boxed{\left( 3, \frac{\pi}{2} \right)}.$</code></pre>
+</div>
+</div>
+</section>
+<section id="quantization-configuration-4-bit-qlora" class="level2">
+<h2 class="anchored" data-anchor-id="quantization-configuration-4-bit-qlora">Quantization Configuration (4-bit QLoRA)</h2>
+<div id="VLcIELzmusp6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># BitsAndBytes configuration</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>bnb_config <span class="op">=</span> BitsAndBytesConfig(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Load the model using 4-bit precision</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    load_in_4bit<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Quantization type (fp4 or nf4)</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># nf4 is "normalized float 4" format, uses an asymmetric quantization scheme with 4-bit precision</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># optimized for normally distributed weights (better than fp4 for neural networks)</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    bnb_4bit_quant_type<span class="op">=</span><span class="st">"nf4"</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Compute dtype for 4-bit models</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    bnb_4bit_compute_dtype<span class="op">=</span>torch.bfloat16,</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use double quantization for 4-bit models</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Double quantization applies further quantization to the quantization constants</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    bnb_4bit_use_double_quant<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="load-the-base-model-and-tokenizer" class="level2">
+<h2 class="anchored" data-anchor-id="load-the-base-model-and-tokenizer">Load the Base Model and Tokenizer</h2>
+<div id="LH08_3srusp6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Qwen3-1.7B</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>model_name <span class="op">=</span> <span class="st">"Qwen/Qwen3-1.7B"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="0IYSGb25usp6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1772290183636,&quot;user_tz&quot;:420,&quot;elapsed&quot;:10700,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="17cb540b-a9ab-4ee3-e2a0-a100dc7a46ea">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load Qwen3 model from Hugging Face</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> AutoModelForCausalLM.from_pretrained(</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    model_name,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply 4-bit quantization</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    quantization_config<span class="op">=</span>bnb_config,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Don't cache key/value states during training</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    use_cache<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Load the entire model on the GPU if available</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    device_map<span class="op">=</span><span class="st">"auto"</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Enable Qwen3's native thinking mode</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    attn_implementation<span class="op">=</span><span class="st">"eager"</span>,</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major":2,"version_minor":0,"model_id":"79a584a7e01f45eebe752967aff18a97","quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The tied weights mapping and config for this model specifies to tie model.embed_tokens.weight to lm_head.weight, but both are present in the checkpoints, so we will NOT tie them. You should update the config with `tie_word_embeddings=False` to silence this warning</code></pre>
+</div>
+</div>
+<div id="xMA_0W-ausp6" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare model for k-bit (QLoRA) training</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> prepare_model_for_kbit_training(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="QkbA34iousp7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load tokenizer</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>tokenizer <span class="op">=</span> AutoTokenizer.from_pretrained(model_name, trust_remote_code<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure pad token is set</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> tokenizer.pad_token <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    tokenizer.pad_token <span class="op">=</span> tokenizer.eos_token</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Pad on the left for decoder-only generation</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>tokenizer.padding_side <span class="op">=</span> <span class="st">"left"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="NspjiuNSw3hG" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1772290186745,&quot;user_tz&quot;:420,&quot;elapsed&quot;:5,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="0e586c82-fcde-4c75-9c8f-770687e91dcf">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the vocabulary size</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(tokenizer.vocab_size)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>151643</code></pre>
+</div>
+</div>
+</section>
+<section id="apply-lora-parameter-efficient-fine-tuning" class="level2">
+<h2 class="anchored" data-anchor-id="apply-lora-parameter-efficient-fine-tuning">Apply LoRA (Parameter-Efficient Fine-Tuning)</h2>
+<div id="WZ4FM5evusp7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LoRA configuration</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>lora_config <span class="op">=</span> LoraConfig(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># LoRA rank dimension (controls capacity of LoRA layers)</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    r<span class="op">=</span><span class="dv">16</span>,</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Scaling parameter for LoRA updates (higher alpha increases contribution of LoRA weights)</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    lora_alpha<span class="op">=</span><span class="dv">64</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Dropout rate for LoRA layers</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>    lora_dropout<span class="op">=</span><span class="fl">0.05</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Specifies whether to add bias in LoRA layers</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    bias<span class="op">=</span><span class="st">"none"</span>,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># "CAUSAL_LM" indicates that LoRA is applied for causal language modeling</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    task_type<span class="op">=</span><span class="st">"CAUSAL_LM"</span>,</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Qwen3 attention projection names</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>    target_modules<span class="op">=</span>[<span class="st">"q_proj"</span>, <span class="st">"k_proj"</span>, <span class="st">"v_proj"</span>, <span class="st">"o_proj"</span>,</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"gate_proj"</span>, <span class="st">"up_proj"</span>, <span class="st">"down_proj"</span>],</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="NsMt7Sgfusp7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1772290187480,&quot;user_tz&quot;:420,&quot;elapsed&quot;:733,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="ff3e4860-3f9c-4d3f-82e0-b0f42caeca53">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Wrap the model with LoRA adapters</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> get_peft_model(model, lora_config)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the fraction of trainable parameters with LoRA</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>model.print_trainable_parameters()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>trainable params: 17,432,576 || all params: 2,049,172,480 || trainable%: 0.8507</code></pre>
+</div>
+</div>
+</section>
+<section id="grpo-training-configuration" class="level2">
+<h2 class="anchored" data-anchor-id="grpo-training-configuration">GRPO Training Configuration</h2>
+<p>GRPO (Group Relative Policy Optimization) is an RL algorithm designed for LLMs. For each prompt it: 1. Samples multiple completions from the current policy. 2. Scores each with the reward functions. 3. Normalises rewards within the group to compute advantages. 4. Updates the policy to increase the probability of high-reward completions, with a KL penalty to stay close to the reference policy.</p>
+<div id="hFZEqtvpusp7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GRPO training configuration</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>grpo_config <span class="op">=</span> GRPOConfig(</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Output directory where the model predictions and checkpoints will be stored</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    output_dir<span class="op">=</span><span class="st">"./qwen3-math-grpo"</span>,</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Total training steps</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    max_steps<span class="op">=</span><span class="dv">250</span>,</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Number of prompts processed per optimisation step</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    per_device_train_batch_size<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Gradient accumulation to simulate a larger effective batch</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    gradient_accumulation_steps<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Number of response samples drawn per prompt during GRPO rollout</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    num_generations<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Maximum tokens to generate per completion during rollout</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    max_completion_length<span class="op">=</span><span class="dv">512</span>,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Learning rate</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    learning_rate<span class="op">=</span><span class="fl">5e-6</span>,</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Optimizer</span></span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    optim<span class="op">=</span><span class="st">"paged_adamw_8bit"</span>,</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Mixed-precision</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    bf16<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    fp16<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># KL penalty coefficient, keeps policy from diverging too far from reference</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    beta<span class="op">=</span><span class="fl">0.04</span>,</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log every N steps</span></span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>    logging_steps<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Save a checkpoint every N steps</span></span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>    save_steps<span class="op">=</span><span class="dv">50</span>,</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Disable external reporting</span></span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>    report_to<span class="op">=</span><span class="st">"none"</span>,</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="rl-training-with-grpotrainer" class="level2">
+<h2 class="anchored" data-anchor-id="rl-training-with-grpotrainer">RL Training with GRPOTrainer</h2>
+<div id="XJnrwXQEusp7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GRPOTrainer handles the full RL loop</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>trainer <span class="op">=</span> GRPOTrainer(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span>model,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    processing_class<span class="op">=</span>tokenizer,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    reward_funcs<span class="op">=</span>[correctness_reward, format_reward],</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    args<span class="op">=</span>grpo_config,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    train_dataset<span class="op">=</span>dataset,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="gcMwH8oYusp8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1772330469999,&quot;user_tz&quot;:420,&quot;elapsed&quot;:33052050,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="dfa58cd6-7721-4714-9a78-fa5a9fc9f28e">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start RL training</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>trainer.train()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'bos_token_id': None, 'pad_token_id': 151643}.
+Passing `generation_config` together with generation-related arguments=({'disable_compile'}) is deprecated and will be removed in future versions. Please pass either a `generation_config` object OR all generation parameters explicitly, but not both.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+      
+      <progress value="45" max="250" style="width:300px; height:20px; vertical-align: middle;"></progress>
+      [ 45/250 1:56:06 &lt; 9:13:30, 0.01 it/s, Epoch 0.18/1]
+    </div>
+    
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Step</th>
+<th data-quarto-table-cell-role="th">Training Loss</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td>20</td>
+<td>0.000005</td>
+</tr>
+<tr class="odd">
+<td>30</td>
+<td>0.000011</td>
+</tr>
+<tr class="even">
+<td>40</td>
+<td>0.000010</td>
+</tr>
+</tbody>
+</table>
+<p>
+</p></div>
+<div class="cell-output cell-output-display">
+<div>
+      
+      <progress value="250" max="250" style="width:300px; height:20px; vertical-align: middle;"></progress>
+      [250/250 11:08:29, Epoch 1/1]
+    </div>
+    
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">Step</th>
+<th data-quarto-table-cell-role="th">Training Loss</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10</td>
+<td>0.000000</td>
+</tr>
+<tr class="even">
+<td>20</td>
+<td>0.000005</td>
+</tr>
+<tr class="odd">
+<td>30</td>
+<td>0.000011</td>
+</tr>
+<tr class="even">
+<td>40</td>
+<td>0.000010</td>
+</tr>
+<tr class="odd">
+<td>50</td>
+<td>0.000011</td>
+</tr>
+<tr class="even">
+<td>60</td>
+<td>0.000014</td>
+</tr>
+<tr class="odd">
+<td>70</td>
+<td>0.000020</td>
+</tr>
+<tr class="even">
+<td>80</td>
+<td>0.001136</td>
+</tr>
+<tr class="odd">
+<td>90</td>
+<td>0.000028</td>
+</tr>
+<tr class="even">
+<td>100</td>
+<td>0.000036</td>
+</tr>
+<tr class="odd">
+<td>110</td>
+<td>0.000031</td>
+</tr>
+<tr class="even">
+<td>120</td>
+<td>0.000030</td>
+</tr>
+<tr class="odd">
+<td>130</td>
+<td>0.000035</td>
+</tr>
+<tr class="even">
+<td>140</td>
+<td>0.000039</td>
+</tr>
+<tr class="odd">
+<td>150</td>
+<td>0.000036</td>
+</tr>
+<tr class="even">
+<td>160</td>
+<td>0.000143</td>
+</tr>
+<tr class="odd">
+<td>170</td>
+<td>0.000046</td>
+</tr>
+<tr class="even">
+<td>180</td>
+<td>0.000046</td>
+</tr>
+<tr class="odd">
+<td>190</td>
+<td>0.000038</td>
+</tr>
+<tr class="even">
+<td>200</td>
+<td>0.000050</td>
+</tr>
+<tr class="odd">
+<td>210</td>
+<td>0.000039</td>
+</tr>
+<tr class="even">
+<td>220</td>
+<td>0.000058</td>
+</tr>
+<tr class="odd">
+<td>230</td>
+<td>0.000032</td>
+</tr>
+<tr class="even">
+<td>240</td>
+<td>0.000037</td>
+</tr>
+<tr class="odd">
+<td>250</td>
+<td>0.000034</td>
+</tr>
+</tbody>
+</table>
+<p>
+</p></div>
+<div class="cell-output cell-output-display" data-execution_count="20">
+<pre><code>TrainOutput(global_step=250, training_loss=7.859855078277178e-05, metrics={'train_runtime': 40279.4771, 'train_samples_per_second': 0.05, 'train_steps_per_second': 0.006, 'total_flos': 0.0, 'train_loss': 7.859855078277178e-05})</code></pre>
+</div>
+</div>
+</section>
+<section id="inference-with-the-fine-tuned-model" class="level2">
+<h2 class="anchored" data-anchor-id="inference-with-the-fine-tuned-model">Inference with the Fine-Tuned Model</h2>
+<div id="OtHWQLSlusp8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set model to inference mode</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">eval</span>()</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>model.config.use_cache <span class="op">=</span> <span class="va">True</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="Jg8QfyHsusp8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> display, Markdown</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Function for generating responses to math problems</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> solve_math(problem: <span class="bu">str</span>, max_new_tokens: <span class="bu">int</span> <span class="op">=</span> <span class="dv">2048</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Generate a step-by-step solution for a given maths problem."""</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    messages <span class="op">=</span> [</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"role"</span>: <span class="st">"system"</span>, <span class="st">"content"</span>: SYSTEM_PROMPT},</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>        {<span class="st">"role"</span>: <span class="st">"user"</span>,   <span class="st">"content"</span>: problem},</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Apply Qwen3 chat template</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>    inputs <span class="op">=</span> tokenizer.apply_chat_template(</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>        messages,</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>        return_tensors<span class="op">=</span><span class="st">"pt"</span>,</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>        add_generation_prompt<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>        return_dict<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>    ).to(model.device)</span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> model.generate(</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>            <span class="op">**</span>inputs,</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>            max_new_tokens<span class="op">=</span>max_new_tokens,</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>            do_sample<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>            temperature<span class="op">=</span><span class="fl">0.6</span>,</span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>            top_p<span class="op">=</span><span class="fl">0.95</span>,</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>            repetition_penalty<span class="op">=</span><span class="fl">1.05</span>,</span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a>            eos_token_id<span class="op">=</span>tokenizer.eos_token_id,</span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Decode only the newly generated tokens and skip the prompt</span></span>
+<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a>    generated_ids <span class="op">=</span> outputs[<span class="dv">0</span>][inputs[<span class="st">"input_ids"</span>].shape[<span class="dv">1</span>]:]</span>
+<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> tokenizer.decode(generated_ids, skip_special_tokens<span class="op">=</span><span class="va">True</span>).strip()</span>
+<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-34"><a href="#cb30-34" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Render as formatted Markdown/LaTeX</span></span>
+<span id="cb30-35"><a href="#cb30-35" aria-hidden="true" tabindex="-1"></a>    display(Markdown(response))</span>
+<span id="cb30-36"><a href="#cb30-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-37"><a href="#cb30-37" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract the final answer</span></span>
+<span id="cb30-38"><a href="#cb30-38" aria-hidden="true" tabindex="-1"></a>    boxed <span class="op">=</span> extract_boxed_answer(response)</span>
+<span id="cb30-39"><a href="#cb30-39" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Extracted answer:"</span>, boxed <span class="cf">if</span> boxed <span class="cf">else</span> <span class="st">"(no </span><span class="ch">\\</span><span class="st">boxed</span><span class="sc">{}</span><span class="st"> found)"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="RocvRT7eusp8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1772333118364,&quot;user_tz&quot;:420,&quot;elapsed&quot;:170246,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="c5bcf65f-ad58-45eb-894f-0d9dcc960091">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 1: algebra</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>solve_math(<span class="st">"Solve for x: 3x² - 12x + 9 = 0"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><think> Okay, let’s see. I need to solve the quadratic equation 3x² - 12x + 9 = 0. Hmm, where do I start? Well, first, maybe I can simplify this equation by dividing all terms by 3 to make the coefficients smaller. Let me try that.</think></p>
+<p>So, dividing each term by 3: 3x² divided by 3 is x², -12x divided by 3 is -4x, and 9 divided by 3 is 3. So the equation simplifies to x² - 4x + 3 = 0. That looks simpler. Now, maybe I can factor this quadratic. Let me check.</p>
+<p>Looking for two numbers that multiply to 3 (the constant term) and add up to -4 (the coefficient of the x term). Wait, the numbers would have to be factors of 3. Let’s think… factors of 3 are 1 and 3. But 1 and 3 add up to 4, which is positive. Since the middle term is -4x, both numbers should be negative. So -1 and -3. Yes, -1 times -3 is 3, and -1 plus -3 is -4. Perfect!</p>
+<p>So the quadratic factors as (x - 1)(x - 3) = 0. Wait, let me check that. Expanding (x - 1)(x - 3): x² - 3x - x + 3 = x² - 4x + 3. Yep, that matches. So the solutions are x = 1 and x = 3.</p>
+<p>But wait, let me make sure I didn’t make any mistakes. Let me verify by plugging them back into the original equation. For x = 1: 3(1)^2 -12(1) +9 = 3 -12 +9 = 0. Correct. For x = 3: 3(9) -12(3) +9 = 27 -36 +9 = 0. Also correct.</p>
+<p>Alternatively, I could use the quadratic formula. The original equation was 3x² -12x +9 = 0. So a = 3, b = -12, c = 9. The quadratic formula is x = [-b ± sqrt(b² - 4ac)]/(2a). Let’s compute the discriminant first: b² -4ac = (-12)^2 -4<em>3</em>9 = 144 - 108 = 36. Then sqrt(36) is 6. So x = [12 ±6]/6. That gives (12+6)/6 = 18/6 = 3, and (12-6)/6 = 6/6 = 1. So same answers.</p>
+<p>So both methods give x = 1 and x = 3. Therefore, the solutions are 1 and 3.</p>
+<p>Wait, but the original equation after simplifying was x² -4x +3 = 0, which factors to (x-1)(x-3)=0. Yep, same result. So I think that’s it. The answer should be x = 1 and x = 3.</p>
+<p>I don’t think there are any other solutions because it’s a quadratic equation, which can have at most two real roots. Since we found two, and they check out, that’s all. So the solution set is {1, 3}. </p>
+<p>To solve the quadratic equation $ 3x^2 - 12x + 9 = 0 $, we begin by simplifying the equation:</p>
+<p><span class="math display">\[
+\frac{3x^2 - 12x + 9}{3} = 0 \quad \Rightarrow \quad x^2 - 4x + 3 = 0
+\]</span></p>
+<hr>
+<section id="step-1-factor-the-simplified-equation" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-factor-the-simplified-equation">Step 1: Factor the Simplified Equation</h3>
+<p>We now focus on factoring $ x^2 - 4x + 3 $. We look for two numbers that multiply to $ 3 $ (the constant term) and add up to $ -4 $ (the coefficient of $ x $).</p>
+<p>These numbers are $ -1 $ and $ -3 $. Thus, the equation factors as:</p>
+<p><span class="math display">\[
+x^2 - 4x + 3 = (x - 1)(x - 3)
+\]</span></p>
+<hr>
+</section>
+<section id="step-2-solve-the-factored-equation" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-solve-the-factored-equation">Step 2: Solve the Factored Equation</h3>
+<p>Setting each factor equal to zero:</p>
+<p><span class="math display">\[
+x - 1 = 0 \quad \Rightarrow \quad x = 1
+\]</span> <span class="math display">\[
+x - 3 = 0 \quad \Rightarrow \quad x = 3
+\]</span></p>
+<hr>
+</section>
+<section id="step-3-verification-optional" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-verification-optional">Step 3: Verification (Optional)</h3>
+<p>We can confirm by substituting the solutions back into the original equation:</p>
+<ul>
+<li>For $ x = 1 $: $ 3(1)^2 - 12(1) + 9 = 3 - 12 + 9 = 0 $</li>
+<li>For $ x = 3 $: $ 3(3)^2 - 12(3) + 9 = 27 - 36 + 9 = 0 $</li>
+</ul>
+<p>Both values satisfy the equation.</p>
+<hr>
+</section>
+<section id="final-answer" class="level3">
+<h3 class="anchored" data-anchor-id="final-answer">Final Answer</h3>
+<p><span class="math display">\[
+\boxed{1 \text{ and } 3}
+\]</span></p>
+</section>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Extracted answer: 1 \text{ and } 3</code></pre>
+</div>
+</div>
+<div id="n6mt6SRvMEXM" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1772333306368,&quot;user_tz&quot;:420,&quot;elapsed&quot;:173496,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="ab2b50b2-8b2f-400c-f379-2649e4b0b101">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 2: MATH-500 sample</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>solve_math(dataset[<span class="dv">0</span>][<span class="st">"prompt"</span>][<span class="dv">1</span>][<span class="st">"content"</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><think> Okay, so I need to convert the rectangular coordinate (0, 3) to polar coordinates. Let me recall the formulas for converting between rectangular and polar coordinates.</think></p>
+<p>Polar coordinates are given as (r, θ), where r is the distance from the origin to the point, and θ is the angle made with the positive x-axis. The formulas to convert from rectangular (x, y) to polar (r, θ) are:</p>
+<p>r = √(x² + y²)</p>
+<p>θ = arctan(y/x)</p>
+<p>But wait, I need to be careful with θ here because arctan(y/x) can have multiple solutions depending on the quadrant. Also, since the original point is (0, 3), which is on the y-axis. Let me visualize this. The point (0, 3) is straight up along the y-axis. So, if I plot that on the coordinate plane, it’s 3 units above the origin.</p>
+<p>So, let’s compute r first. Using the formula r = √(x² + y²). Here, x is 0 and y is 3. Plugging those values in:</p>
+<p>r = √(0² + 3²) = √(0 + 9) = √9 = 3. Okay, that seems straightforward. So r is 3.</p>
+<p>Now, θ. The formula is θ = arctan(y/x). But here, x is 0 and y is 3. So, plugging those in:</p>
+<p>θ = arctan(3/0). Wait, division by zero? That’s undefined. Hmm. What does that mean?</p>
+<p>Well, arctan of something divided by zero… Well, when x is 0, the line x=0 is the y-axis. The angle θ for a point on the y-axis is either π/2 or -π/2, right? Because the y-axis is perpendicular to the x-axis. So, if you’re on the positive y-axis, the angle is π/2 radians (which is 90 degrees), and if it’s on the negative y-axis, it’s -π/2 or 3π/2.</p>
+<p>But since our point is (0, 3), which is on the positive y-axis. So θ should be π/2. However, I need to make sure that the arctan function isn’t giving me an error here. Since arctan(3/0) is undefined, but we know that the angle is π/2. So maybe θ is π/2.</p>
+<p>But let me think again. Sometimes, when dealing with arctan, there’s a need to consider the quadrant. But since x is 0 and y is positive, the point is on the positive y-axis, which is the same as the vertical line. So θ is π/2.</p>
+<p>Alternatively, sometimes people use the formula θ = arctan(y/x) but with adjustments for the quadrant. But in this case, since x is 0, the arctangent would be undefined, but we know the actual angle is π/2. So maybe θ is π/2.</p>
+<p>Therefore, the polar coordinates are (3, π/2). Let me check if that makes sense. If we have r = 3 and θ = π/2, then converting back to rectangular coordinates: x = r cos θ = 3 cos(π/2) = 3 * 0 = 0. y = r sin θ = 3 sin(π/2) = 3 * 1 = 3. Yep, that gives us (0, 3), which matches the original point.</p>
+<p>So, that seems correct. Therefore, the polar coordinates are (3, π/2).</p>
+<p>Wait, but just to make sure there isn’t any other possible angle. For example, sometimes when you have points on the axes, the angle is considered as π/2 or 3π/2, depending on the direction. Since our point is on the positive y-axis, θ is π/2. So that’s correct.</p>
+<p>Another way to think about it: the angle θ is measured from the positive x-axis. Since the point is on the y-axis, θ is π/2. So that’s the standard position angle.</p>
+<p>I don’t think there’s any other possibility here. So the answer should be (3, π/2).</p>
+<p><strong>Final Answer</strong> The polar coordinates are . </p>
+<p>To convert the rectangular coordinate <span class="math inline">\((0, 3)\)</span> into polar coordinates <span class="math inline">\((r, \theta)\)</span>, we apply the standard conversion formulas:</p>
+<ul>
+<li>$ r = $</li>
+<li>$ = () $</li>
+</ul>
+<hr>
+<section id="step-1-calculate-r" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-calculate-r">Step 1: Calculate $ r $</h3>
+<p>Given: - $ x = 0 $ - $ y = 3 $</p>
+<p><span class="math display">\[
+r = \sqrt{0^2 + 3^2} = \sqrt{9} = 3
+\]</span></p>
+<hr>
+</section>
+<section id="step-2-calculate" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-calculate">Step 2: Calculate $ $</h3>
+<p><span class="math display">\[
+\theta = \arctan\left(\frac{3}{0}\right)
+\]</span></p>
+<p>This results in an undefined value due to division by zero. However, geometrically, the point <span class="math inline">\((0, 3)\)</span> lies <strong>on the positive y-axis</strong>, which corresponds to an angle of <span class="math inline">\(\frac{\pi}{2}\)</span> radians (or 90°) from the positive x-axis.</p>
+<hr>
+</section>
+<section id="final-result" class="level3">
+<h3 class="anchored" data-anchor-id="final-result">Final Result</h3>
+<p>Thus, the polar coordinates of the point <span class="math inline">\((0, 3)\)</span> are:</p>
+<p><span class="math display">\[
+\boxed{(3, \frac{\pi}{2})}
+\]</span></p>
+</section>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Extracted answer: (3, \frac{\pi}{2})</code></pre>
+</div>
+</div>
+<div id="wvPESR0lusp8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1772333527379,&quot;user_tz&quot;:420,&quot;elapsed&quot;:211524,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="a0348846-afe0-4cbc-ae4b-fb0481eb60cc">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example 3: number theory</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>solve_math(<span class="st">"What is the remainder when 7^</span><span class="sc">{100}</span><span class="st"> is divided by 5?"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display cell-output-markdown">
+<p><think> Okay, so I need to find the remainder when 7^100 is divided by 5. Let me think about how to approach this.</think></p>
+<p>First, I remember that when dealing with remainders, especially with large exponents, modular arithmetic can be helpful. Since we’re dividing by 5, maybe I can use properties of modular arithmetic to simplify this problem.</p>
+<p>Let me recall Euler’s theorem or Fermat’s little theorem. Fermat’s little theorem states that if p is a prime number and a is not a multiple of p, then a^(p-1) ≡ 1 mod p.&nbsp;Here, p is 5, which is prime, and 7 is not a multiple of 5. So, applying Fermat’s little theorem here, 7^4 ≡ 1 mod 5. Wait, because p-1 is 4, so 7^4 ≡ 1 mod 5. That means that 7^4 is congruent to 1 when divided by 5.</p>
+<p>So, if I can express 7^100 in terms of powers of 7^4, maybe I can simplify it. Let me check. Since 100 divided by 4 is 25, so 7^100 = (7<sup>4)</sup>25. Then, using Fermat’s theorem, each 7^4 is 1 mod 5, so (1)^25 mod 5 is 1 mod 5. Therefore, 7^100 ≡ 1 mod 5. Therefore, the remainder when 7^100 is divided by 5 is 1.</p>
+<p>Wait, but let me verify this because sometimes there can be mistakes in the steps. Let me double-check.</p>
+<p>First, confirm Fermat’s little theorem: 7^4 ≡ 1 mod 5. Let’s compute 7 mod 5. 7 divided by 5 is 1 with remainder 2, so 7 ≡ 2 mod 5. Therefore, 7^1 mod 5 is 2, 7^2 is 2^2=4 mod 5, 7^3 is 2<em>4=8≡3 mod 5, 7^4 is 2</em>3=6≡1 mod 5. Yes, that’s correct. So 7^4 ≡ 1 mod 5. Therefore, 7^4k ≡ 1^k ≡ 1 mod 5. So 7^100 is (7<sup>4)</sup>25 ≡ 1^25 ≡ 1 mod 5. So yes, the remainder is 1.</p>
+<p>Alternatively, maybe I can compute it step by step with smaller exponents. Let’s see. Maybe using exponentiation by squaring or something. But since the previous method seems correct, maybe that’s sufficient.</p>
+<p>But just to make sure, let’s try another approach. Let’s compute 7 mod 5 is 2. So 7^1 = 2 mod 5. 7^2 = 2^2 = 4 mod 5. 7^3 = 7^2 * 7 = 4<em>2=8≡3 mod5. 7^4=3</em>2=6≡1 mod5. Then 7<sup>5=7</sup>4 <em>7 ≡1</em>2=2 mod5. So cycle repeats every 4. Therefore, the cycle length is 4. Therefore, 7^100. Since 100 divided by 4 is 25, so the remainder is 0? Wait, no. Wait, 7^4 ≡1, so 7^4k ≡1^k=1 mod5. So 7<sup>100=(7</sup>4)^25 ≡1^25=1 mod5. So same result. So the remainder is 1.</p>
+<p>Alternatively, if I compute 7^100 mod5. Since 7≡2 mod5, so 2^100 mod5. Now, 2^4=16≡1 mod5. So 2^4k ≡1^k=1 mod5. Therefore, 2<sup>100=(2</sup>4)<sup>25≡1</sup>25=1 mod5. So same answer. So yes, the remainder is 1.</p>
+<p>Therefore, the answer should be 1.</p>
+<p>Wait, but just to make sure, maybe I can compute it with smaller exponents. For example, 7^1=2, 7^2=4, 7^3=3, 7^4=1, 7^5=2, etc. So the cycle is 4. So 7^4k+1=2, 7^4k+2=4, 7^4k+3=3, 7^4k+4=1. Therefore, 7^100 is 7^(4*25)= (7<sup>4)</sup>25 ≡1^25=1 mod5. Yep, same conclusion.</p>
+<p>Another way: 7^100 = (7<sup>4)</sup>25. Since 7^4=1 mod5, then (1)^25=1 mod5. So yes.</p>
+<p>Therefore, the remainder is indeed 1.</p>
+<p>I think that’s thorough. I don’t see any mistakes here. So the answer is 1.</p>
+<p><strong>Final Answer</strong> The remainder when <span class="math inline">\(7^{100}\)</span> is divided by 5 is . </p>
+<p>To solve the problem of finding the remainder when <span class="math inline">\(7^{100}\)</span> is divided by 5, we apply <strong>Fermat’s Little Theorem</strong>. This theorem states that for a prime number <span class="math inline">\(p\)</span> and an integer <span class="math inline">\(a\)</span> not divisible by <span class="math inline">\(p\)</span>, we have:</p>
+<p><span class="math display">\[
+a^{p-1} \equiv 1 \pmod{p}
+\]</span></p>
+<p>Here, <span class="math inline">\(p = 5\)</span> and <span class="math inline">\(a = 7\)</span>. Since <span class="math inline">\(7\)</span> is not divisible by <span class="math inline">\(5\)</span>, we apply the theorem:</p>
+<p><span class="math display">\[
+7^{5-1} = 7^4 \equiv 1 \pmod{5}
+\]</span></p>
+<p>This implies:</p>
+<p><span class="math display">\[
+7^4 \equiv 1 \pmod{5}
+\]</span></p>
+<p>We now reduce the exponent <span class="math inline">\(100\)</span> modulo <span class="math inline">\(4\)</span> (since <span class="math inline">\(7^4 \equiv 1\)</span>):</p>
+<p><span class="math display">\[
+100 \div 4 = 25 \text{ remainder } 0
+\]</span></p>
+<p>Thus,</p>
+<p><span class="math display">\[
+7^{100} = (7^4)^{25} \equiv 1^{25} \equiv 1 \pmod{5}
+\]</span></p>
+<hr>
+<section id="final-result-1" class="level3">
+<h3 class="anchored" data-anchor-id="final-result-1">Final Result</h3>
+<p>The remainder when <span class="math inline">\(7^{100}\)</span> is divided by 5 is:</p>
+<p><span class="math display">\[
+\boxed{1}
+\]</span></p>
+</section>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Extracted answer: 1</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+// Left sidebar: start with the "Course Information" section collapsed
+// while lecture sections stay expanded (collapse-level: 2 expands all;
+// Quarto has no per-section setting, so this collapses just that one).
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("#quarto-sidebar .sidebar-item-section").forEach(function (sec) {
+    var text = sec.querySelector(":scope > .sidebar-item-container .menu-text");
+    if (!text || text.textContent.trim() !== "Course Information") return;
+    var sub = sec.querySelector(":scope > ul.collapse");
+    if (sub) sub.classList.remove("show");
+    sec.querySelectorAll(":scope > .sidebar-item-container a[data-bs-toggle]").forEach(function (a) {
+      a.setAttribute("aria-expanded", "false");
+    });
+  });
+});
+</script>
+<script>
+// Add expand/collapse arrows to right-pane TOC entries that have subsections.
+// Clicking the arrow toggles the subsection list without navigating; an
+// inline display style is used so Quarto's scroll-spy can't override it.
+document.addEventListener("DOMContentLoaded", function () {
+  var toc = document.getElementById("TOC");
+  if (!toc) return;
+  toc.querySelectorAll("li").forEach(function (li) {
+    var sub = li.querySelector(":scope > ul");
+    var link = li.querySelector(":scope > a");
+    if (!sub || !link) return;
+    var btn = document.createElement("span");
+    btn.className = "toc-chevron";
+    btn.setAttribute("role", "button");
+    btn.setAttribute("tabindex", "0");
+    btn.setAttribute("aria-label", "Toggle subsections");
+    btn.setAttribute("title", "Show/hide subsections");
+    btn.setAttribute("aria-expanded", "false");
+    link.after(btn);
+    function toggle(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var open = sub.style.display === "block";
+      sub.style.display = open ? "" : "block";
+      btn.classList.toggle("toc-chevron-expanded", !open);
+      btn.setAttribute("aria-expanded", String(!open));
+    }
+    btn.addEventListener("click", toggle);
+    btn.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") toggle(e);
+    });
+  });
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/avakanski\.github\.io\/Spring-2026-Adversarial-Machine-Learning\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" class="pagination-link" aria-label="Llama 2 on Alpaca">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Llama 2 on Alpaca</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" class="pagination-link" aria-label="VLM Reasoning and Tool Use on MATH-500">
+        <span class="nav-page-text">VLM Reasoning and Tool Use on MATH-500</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>CS 4727/5727 - Adversarial Machine Learning, University of Idaho, Spring 2026</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

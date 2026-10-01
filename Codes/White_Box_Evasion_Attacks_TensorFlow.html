@@ -1,0 +1,2913 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Non-targeted Adversarial Attacks – Adversarial Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../Codes/White_Box_Evasion_Attacks_PyTorch.html" rel="next">
+<link href="../Codes/FGSM_Function_TensorFlow.html" rel="prev">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-e90d6670a4065f2536ac3afd6750ccb9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-49b554886c5cde5beb8c9f2b2757bc5f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-e90d6670a4065f2536ac3afd6750ccb9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-sidebar docked quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../Codes/Code_Examples.html">Code Examples</a></li><li class="breadcrumb-item"><a href="../Codes/White_Box_Evasion_Attacks_TensorFlow.html">White-box Evasion Attacks in TensorFlow</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-center sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">Adversarial Machine Learning</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning" title="GitHub repository" class="quarto-navigation-tool px-1" aria-label="GitHub repository"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Information</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#previous-offerings" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Previous Offerings</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#course-syllabus" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syllabus</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#course-description" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Description</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#textbooks" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Textbooks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#learning-outcomes" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Learning Outcomes</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#prerequisites" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prerequisites</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#grading" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Grading</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#course-schedule" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Course Schedule</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_1-Introduction_to_AML/Lecture_1-Introduction_to_AML.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 1 - Introduction to AML</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 1 - Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_2-Deep_Learning_Overview/Lecture_2-Deep_Learning_Overview.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 2 - Deep Learning Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_3-Mathematics_for_ML/Lecture_3-Mathematics_for_ML.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 3 - Mathematics for Machine Learning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 2 - Evasion Attacks</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_4-White-box_Evasion_Attacks/Lecture_4-White-box_Evasion_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 4 - White-box Evasion Attacks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_5-Black-box_Evasion_Attacks/Lecture_5-Black-box_Evasion_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 5 - Black-box Evasion Attacks</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 3 - Large Language Models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_6-Introduction_to_LLMs/Lecture_6-Introduction_to_LLMs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 6 - Introduction to LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_7-Adversarial_Attacks_on_LLMs/Lecture_7-Adversarial_Attacks_on_LLMs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 7 - Adversarial Attacks on LLMs</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 4 - Defenses and Poisoning Attacks</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_8-Defenses_Against_Evasion_Attacks/Lecture_8-Defenses_Against_Evasion_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 8 - Defenses Against Evasion Attacks</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_9-Poisoning_Attacks_and_Defenses/Lecture_9-Poisoning_Attacks_and_Defenses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 9 - Poisoning Attacks and Defenses</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 5 - AML in Cybersecurity</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_10-AML_in_Network_Intrusion_Detection/Lecture_10-AML_in_Network_Intrusion_Detection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 10 - Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_11-AML_in_Malware_Detection/Lecture_11-AML_in_Malware_Detection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 11 - Malware Detection and Classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_12-AML_in_Spam_Filtering_URL_Detection_CPS/Lecture_12-AML_in_Spam_Filtering_URL_Detection_CPS.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 12 - Spam Filtering, URL Detection, Cyber-physical Systems</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Theme 6 - Privacy, Explainability, Fairness</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_13-Privacy_Attacks_and_Defenses/Lecture_13-Privacy_Attacks_and_Defenses.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 13 - Privacy Attacks and Defenses</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_14-Explainability_in_ML/Lecture_14-Explainability_in_ML.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 14 - Explainability in Machine Learning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Lectures/Lecture_15-Bias_and_Fairness_in_ML/Lecture_15-Bias_and_Fairness_in_ML.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lecture 15 - Bias and Fairness in Machine Learning</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../Codes/Code_Examples.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Code Examples</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Code_Examples.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/FGSM_Function_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FGSM Attack in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_TensorFlow.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">White-box Evasion Attacks in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_PyTorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Black-box_Boundary_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Black-box Boundary Attack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/LLM_Supervised_Finetuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLM Supervised Fine-tuning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Jailbreak_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jailbreak Attacks on LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Adversarial_Training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adversarial Training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Intrusion_Detection_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Attack on Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">Hello World of ML</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview (PDF)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic Regression on Iris</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random Forest on Breast Cancer</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/XGBoost_on_Titanic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">XGBoost on Titanic</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/MLPs_on_MNIST.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MLPs on MNIST</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/ResNet_on_CIFAR10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ResNet on CIFAR-10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/DistilBERT_on_IMDb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DistilBERT on IMDb</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llama 2 on Alpaca</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Qwen3 GRPO on MATH-500</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VLM Reasoning and Tool Use on MATH-500</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/FGSM_Function_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FGSM Attack in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_PyTorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Black-box_Boundary_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Black-box Boundary Attack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/LLM_Supervised_Finetuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLM Supervised Fine-tuning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Jailbreak_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jailbreak Attacks on LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Adversarial_Training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adversarial Training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Intrusion_Detection_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Attack on Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">Hello World of ML</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview (PDF)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic Regression on Iris</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random Forest on Breast Cancer</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/XGBoost_on_Titanic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">XGBoost on Titanic</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/MLPs_on_MNIST.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MLPs on MNIST</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/ResNet_on_CIFAR10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ResNet on CIFAR-10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/DistilBERT_on_IMDb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DistilBERT on IMDb</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llama 2 on Alpaca</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Qwen3 GRPO on MATH-500</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VLM Reasoning and Tool Use on MATH-500</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/FGSM_Function_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FGSM Attack in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_PyTorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Black-box_Boundary_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Black-box Boundary Attack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/LLM_Supervised_Finetuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLM Supervised Fine-tuning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Jailbreak_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jailbreak Attacks on LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Adversarial_Training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adversarial Training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Intrusion_Detection_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Attack on Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Hello World of ML</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview (PDF)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic Regression on Iris</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random Forest on Breast Cancer</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/XGBoost_on_Titanic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">XGBoost on Titanic</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/MLPs_on_MNIST.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MLPs on MNIST</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/ResNet_on_CIFAR10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ResNet on CIFAR-10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/DistilBERT_on_IMDb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DistilBERT on IMDb</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llama 2 on Alpaca</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Qwen3 GRPO on MATH-500</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VLM Reasoning and Tool Use on MATH-500</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#targeted-adversarial-attack" id="toc-targeted-adversarial-attack" class="nav-link active" data-scroll-target="#targeted-adversarial-attack">Targeted Adversarial Attack</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../Codes/Code_Examples.html">Code Examples</a></li><li class="breadcrumb-item"><a href="../Codes/White_Box_Evasion_Attacks_TensorFlow.html">White-box Evasion Attacks in TensorFlow</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Non-targeted Adversarial Attacks</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div id="cell-1" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616117088,&quot;user_tz&quot;:420,&quot;elapsed&quot;:5702,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="0a5dd3a6-5d71-4418-94e8-4566eb59f112" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install the ART library (provides adversarial attacks)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>pip install adversarial<span class="op">-</span>robustness<span class="op">-</span>toolbox</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre>Collecting adversarial-robustness-toolbox
+
+  Downloading adversarial_robustness_toolbox-1.20.1-py3-none-any.whl.metadata (10 kB)
+
+Requirement already satisfied: numpy&gt;=1.18.0 in /usr/local/lib/python3.12/dist-packages (from adversarial-robustness-toolbox) (2.0.2)
+
+Requirement already satisfied: scipy&gt;=1.4.1 in /usr/local/lib/python3.12/dist-packages (from adversarial-robustness-toolbox) (1.16.3)
+
+Requirement already satisfied: scikit-learn&gt;=0.22.2 in /usr/local/lib/python3.12/dist-packages (from adversarial-robustness-toolbox) (1.6.1)
+
+Requirement already satisfied: six in /usr/local/lib/python3.12/dist-packages (from adversarial-robustness-toolbox) (1.17.0)
+
+Requirement already satisfied: setuptools in /usr/local/lib/python3.12/dist-packages (from adversarial-robustness-toolbox) (75.2.0)
+
+Requirement already satisfied: tqdm in /usr/local/lib/python3.12/dist-packages (from adversarial-robustness-toolbox) (4.67.1)
+
+Requirement already satisfied: joblib&gt;=1.2.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn&gt;=0.22.2-&gt;adversarial-robustness-toolbox) (1.5.3)
+
+Requirement already satisfied: threadpoolctl&gt;=3.1.0 in /usr/local/lib/python3.12/dist-packages (from scikit-learn&gt;=0.22.2-&gt;adversarial-robustness-toolbox) (3.6.0)
+
+Downloading adversarial_robustness_toolbox-1.20.1-py3-none-any.whl (1.1 MB)
+
+   <span class="ansi-bright-black-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">0.0/1.1 MB</span> <span class="ansi-red-fg">?</span> eta <span class="ansi-cyan-fg">-:--:--</span>
+   <span class="ansi-bright-black-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">1.1/1.1 MB</span> <span class="ansi-red-fg">55.9 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+
+Installing collected packages: adversarial-robustness-toolbox
+
+Successfully installed adversarial-robustness-toolbox-1.20.1
+</pre>
+</div>
+</div>
+</div>
+<div id="cell-2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;colab&quot;,&quot;value&quot;:{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}}" data-outputid="2655fe42-4b87-48ae-f429-5013ad67ac6e" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import libraries</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tensorflow</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> os <span class="im">import</span> listdir</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cv2</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> natsort</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the version of tensorflow and keras</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"TensorFlow version:</span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(tensorflow.__version__))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>TensorFlow version:2.19.0</code></pre>
+</div>
+</div>
+<div id="cell-3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616136321,&quot;user_tz&quot;:420,&quot;elapsed&quot;:10556,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="0ea5a3f1-ee19-4c96-b190-f2dfc22c2269" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the dataset</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>wget https:<span class="op">//</span>www.idahofallshighered.org<span class="op">/</span>vakanski<span class="op">/</span>Codes_Data<span class="op">/</span>imagenette2.<span class="bu">zip</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>--2026-01-17 02:16:24--  https://www.idahofallshighered.org/vakanski/Codes_Data/imagenette2.zip
+Resolving www.idahofallshighered.org (www.idahofallshighered.org)... 50.6.2.30
+Connecting to www.idahofallshighered.org (www.idahofallshighered.org)|50.6.2.30|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 106722829 (102M) [application/zip]
+Saving to: ‘imagenette2.zip’
+
+imagenette2.zip     100%[===================&gt;] 101.78M  13.3MB/s    in 9.4s    
+
+2026-01-17 02:16:35 (10.9 MB/s) - ‘imagenette2.zip’ saved [106722829/106722829]
+</code></pre>
+</div>
+</div>
+<div id="cell-4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616137823,&quot;user_tz&quot;:420,&quot;elapsed&quot;:1501,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uncompress the dataset</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span>unzip <span class="op">-</span>uq <span class="st">'imagenette2.zip'</span> <span class="op">-</span>d <span class="st">'sample_data/'</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616146421,&quot;user_tz&quot;:420,&quot;elapsed&quot;:8591,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to load the images and the labels from the dataset</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> load_images_and_labels(directory):</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    imgs_list <span class="op">=</span> []</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    labels_list <span class="op">=</span> []</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># List of all subfolders in the directory</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    subfolders_list_1 <span class="op">=</span> listdir(directory)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Make sure that the subfolders are sorted</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    subfolders_list <span class="op">=</span> natsort.natsorted(subfolders_list_1)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Assign a label to each folder with images (0 to the first folder)</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    lab <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> subfolder_name <span class="kw">in</span> subfolders_list:</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>            sub_dir_path <span class="op">=</span> directory <span class="op">+</span> <span class="st">'/'</span> <span class="op">+</span> subfolder_name</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Read the images as numpy arrays</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>            imagesList <span class="op">=</span> listdir(sub_dir_path)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(imagesList)):</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>              tmp_img <span class="op">=</span> cv2.imread(os.path.join(sub_dir_path, imagesList[i]))</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>              <span class="co"># Resize all images to 128 x 128 pixels</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>              resized_img <span class="op">=</span> cv2.resize(tmp_img, (<span class="dv">128</span>, <span class="dv">128</span>))</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>              img_arr <span class="op">=</span> np.array(resized_img)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>              imgs_list.append(img_arr<span class="op">/</span><span class="fl">255.</span>)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>              labels_list.append(lab)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>            lab <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Convert the lists to numpy arrays</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    imgs <span class="op">=</span> np.asarray(imgs_list)</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> np.asarray(labels_list)</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> imgs, labels</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the above function to load the training and test datasets</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>train_images, train_labels <span class="op">=</span> load_images_and_labels(<span class="st">'sample_data/imagenette2/train'</span>)</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>test_and_val_images, test_and_val_labels <span class="op">=</span> load_images_and_labels(<span class="st">'sample_data/imagenette2/val'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616146680,&quot;user_tz&quot;:420,&quot;elapsed&quot;:260,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split into test and validation sets</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>test_images, val_images, test_labels, val_labels <span class="op">=</span> train_test_split(test_and_val_images, test_and_val_labels, test_size<span class="op">=</span><span class="fl">0.4</span>, random_state<span class="op">=</span><span class="dv">12</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;elapsed&quot;:922,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616147605,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;},&quot;user_tz&quot;:420}}" data-outputid="794ac4f9-aeae-49dc-f659-07f24054105d" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the shapes of train, validation, and test datasets</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Images train shape: </span><span class="sc">{}</span><span class="st"> - Labels train shape: </span><span class="sc">{}</span><span class="st">'</span>.<span class="bu">format</span>(train_images.shape, train_labels.shape))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Images validation shape: </span><span class="sc">{}</span><span class="st"> - Labels validation shape: </span><span class="sc">{}</span><span class="st">'</span>.<span class="bu">format</span>(val_images.shape, val_labels.shape))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Images test shape: </span><span class="sc">{}</span><span class="st"> - Labels test shape: </span><span class="sc">{}</span><span class="st">'</span>.<span class="bu">format</span>(test_images.shape, test_labels.shape))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the range of images (to make sure they are in the [0, 1] range)</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Max pixel value'</span>, np.<span class="bu">max</span>(train_images))</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Min pixel value'</span>, np.<span class="bu">min</span>(train_images))</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Average pixel value'</span>, np.mean(train_images))</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Data type'</span>, train_images[<span class="dv">0</span>].dtype)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Images train shape: (9469, 128, 128, 3) - Labels train shape: (9469,)
+Images validation shape: (1570, 128, 128, 3) - Labels validation shape: (1570,)
+Images test shape: (2355, 128, 128, 3) - Labels test shape: (2355,)
+
+Max pixel value 1.0
+Min pixel value 0.0
+Average pixel value 0.44966878195890525
+Data type float64</code></pre>
+</div>
+</div>
+<div id="cell-8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;elapsed&quot;:1944,&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616149555,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;},&quot;user_tz&quot;:420}}" data-outputid="d0fe08b3-0861-4546-e8bb-9fb0c49de52e" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># A list with the names of the image classes</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>label_names <span class="op">=</span> [<span class="st">'tench'</span>, <span class="st">'English springer'</span>, <span class="st">'cassette player'</span>, <span class="st">'chain saw'</span>, <span class="st">'church'</span>, <span class="st">'French horn'</span>,  <span class="st">'garbage truck'</span>, <span class="st">'gas pump'</span>, <span class="st">'golf ball'</span>, <span class="st">'parachute'</span>]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot a few images to check if the labels make sense</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="dv">10</span>))</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">9</span>):</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    i <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="bu">len</span>(train_images), <span class="dv">1</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> plt.subplot(<span class="dv">3</span>, <span class="dv">3</span>, n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    plt.imshow(train_images[i[<span class="dv">0</span>]])</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="st">'Label:'</span> <span class="op">+</span> <span class="bu">str</span>(label_names[train_labels[i[<span class="dv">0</span>]]]))</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616149566,&quot;user_tz&quot;:420,&quot;elapsed&quot;:3,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-execution_count="9">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow.keras.models <span class="im">import</span> Model</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow.keras.layers <span class="im">import</span> Dense, GlobalAveragePooling2D, Dropout</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow.keras.optimizers <span class="im">import</span> Adam</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow.keras.callbacks <span class="im">import</span> EarlyStopping</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tensorflow.keras.applications <span class="im">import</span> vgg16</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>now <span class="op">=</span> datetime.datetime.now</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-10" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616154552,&quot;user_tz&quot;:420,&quot;elapsed&quot;:4981,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="fa3bb2b4-56f8-411b-acaf-062de1c8339b" data-execution_count="10">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>base_model <span class="op">=</span> vgg16.VGG16(weights<span class="op">=</span><span class="st">'imagenet'</span>, include_top<span class="op">=</span><span class="va">False</span>, input_shape<span class="op">=</span>(<span class="dv">128</span>, <span class="dv">128</span>, <span class="dv">3</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a global spatial average pooling layer</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> base_model.output</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> GlobalAveragePooling2D()(x)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Add fully-connected layers</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Dense(<span class="dv">2048</span>, activation<span class="op">=</span><span class="st">'relu'</span>)(x)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Dropout(<span class="fl">0.25</span>)(x)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Dense(<span class="dv">512</span>, activation<span class="op">=</span><span class="st">'relu'</span>)(x)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> Dropout(<span class="fl">0.25</span>)(x)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a softmax layer with 10 classes</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> Dense(<span class="dv">10</span>, activation<span class="op">=</span><span class="st">'softmax'</span>)(x)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the model</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> Model(inputs<span class="op">=</span>base_model.<span class="bu">input</span>, outputs<span class="op">=</span>predictions)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre>Downloading data from https://storage.googleapis.com/tensorflow/keras-applications/vgg16/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5
+
+<span class="ansi-bold">58889256/58889256</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">4s</span> 0us/step
+</pre>
+</div>
+</div>
+</div>
+<div id="cell-11" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616752438,&quot;user_tz&quot;:420,&quot;elapsed&quot;:597882,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="45932452-1883-4632-ef51-3f41fcbe9f81" data-execution_count="11">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compile the model</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">compile</span>(optimizer<span class="op">=</span>Adam(learning_rate<span class="op">=</span><span class="fl">1e-4</span>), loss<span class="op">=</span><span class="st">'sparse_categorical_crossentropy'</span>, metrics <span class="op">=</span> [<span class="st">'accuracy'</span>])</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>callbacks <span class="op">=</span> [EarlyStopping(monitor<span class="op">=</span><span class="st">'val_loss'</span>, patience<span class="op">=</span><span class="dv">5</span>)]</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> now()</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>history <span class="op">=</span> model.fit(train_images, train_labels, epochs<span class="op">=</span><span class="dv">10</span>, batch_size<span class="op">=</span><span class="dv">64</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                     validation_data<span class="op">=</span>[val_images, val_labels], verbose<span class="op">=</span><span class="dv">1</span>, callbacks<span class="op">=</span>callbacks)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Training time: </span><span class="sc">%s</span><span class="st">'</span> <span class="op">%</span> (now() <span class="op">-</span> t))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre>Epoch 1/10
+
+<span class="ansi-bold">148/148</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">135s</span> 672ms/step - accuracy: 0.5909 - loss: 1.1879 - val_accuracy: 0.8701 - val_loss: 0.3913
+
+Epoch 2/10
+
+<span class="ansi-bold">148/148</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">51s</span> 345ms/step - accuracy: 0.9069 - loss: 0.3004 - val_accuracy: 0.8962 - val_loss: 0.3147
+
+Epoch 3/10
+
+<span class="ansi-bold">148/148</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">51s</span> 345ms/step - accuracy: 0.9408 - loss: 0.1974 - val_accuracy: 0.9153 - val_loss: 0.3216
+
+Epoch 4/10
+
+<span class="ansi-bold">148/148</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">51s</span> 344ms/step - accuracy: 0.9553 - loss: 0.1435 - val_accuracy: 0.9025 - val_loss: 0.3273
+
+Epoch 5/10
+
+<span class="ansi-bold">148/148</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">51s</span> 344ms/step - accuracy: 0.9670 - loss: 0.1081 - val_accuracy: 0.9210 - val_loss: 0.2791
+
+Epoch 6/10
+
+<span class="ansi-bold">148/148</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">51s</span> 344ms/step - accuracy: 0.9756 - loss: 0.0748 - val_accuracy: 0.8994 - val_loss: 0.3767
+
+Epoch 7/10
+
+<span class="ansi-bold">148/148</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">51s</span> 344ms/step - accuracy: 0.9774 - loss: 0.0663 - val_accuracy: 0.9115 - val_loss: 0.2904
+
+Epoch 8/10
+
+<span class="ansi-bold">148/148</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">51s</span> 344ms/step - accuracy: 0.9781 - loss: 0.0662 - val_accuracy: 0.9134 - val_loss: 0.3475
+
+Epoch 9/10
+
+<span class="ansi-bold">148/148</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">51s</span> 344ms/step - accuracy: 0.9870 - loss: 0.0436 - val_accuracy: 0.8949 - val_loss: 0.4487
+
+Epoch 10/10
+
+<span class="ansi-bold">148/148</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">51s</span> 344ms/step - accuracy: 0.9808 - loss: 0.0594 - val_accuracy: 0.9204 - val_loss: 0.2969
+
+Training time: 0:09:57.849494
+</pre>
+</div>
+</div>
+</div>
+<div id="cell-12" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616752680,&quot;user_tz&quot;:420,&quot;elapsed&quot;:240,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="01ea5d7b-9a5f-401d-fbb2-49c1c7f62ceb" data-execution_count="12">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the loss and accuracy</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>train_loss <span class="op">=</span> history.history[<span class="st">'loss'</span>]</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>val_loss <span class="op">=</span> history.history[<span class="st">'val_loss'</span>]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>acc <span class="op">=</span> history.history[<span class="st">'accuracy'</span>]</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>val_acc <span class="op">=</span> history.history[<span class="st">'val_accuracy'</span>]</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>epochsn <span class="op">=</span> np.arange(<span class="dv">1</span>, <span class="bu">len</span>(train_loss)<span class="op">+</span><span class="dv">1</span>,<span class="dv">1</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>plt.plot(epochsn,train_loss, <span class="st">'b'</span>, label<span class="op">=</span><span class="st">'Training Loss'</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>plt.plot(epochsn,val_loss, <span class="st">'r'</span>, label<span class="op">=</span><span class="st">'Validation Loss'</span>)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>plt.grid(color<span class="op">=</span><span class="st">'gray'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'LOSS'</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Epochs'</span>)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Loss'</span>)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>plt.plot(epochsn, acc, <span class="st">'b'</span>, label<span class="op">=</span><span class="st">'Training Accuracy'</span>)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>plt.plot(epochsn, val_acc, <span class="st">'r'</span>, label<span class="op">=</span><span class="st">'Validation Accuracy'</span>)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>plt.grid(color<span class="op">=</span><span class="st">'gray'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'ACCURACY'</span>)</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Epochs'</span>)</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Accuracy'</span>)</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-13-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-13" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616767687,&quot;user_tz&quot;:420,&quot;elapsed&quot;:15001,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="4c84c488-eda8-4a4f-8ae5-df9d40fc02c7" data-execution_count="13">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate on test images</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>evals_test <span class="op">=</span> model.evaluate(test_images, test_labels)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Classification Accuracy: "</span>, evals_test[<span class="dv">1</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">74/74</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">14s</span> 112ms/step - accuracy: 0.9186 - loss: 0.3142
+
+Classification Accuracy:  0.9133757948875427
+</pre>
+</div>
+</div>
+</div>
+<div id="cell-15" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616773420,&quot;user_tz&quot;:420,&quot;elapsed&quot;:5732,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-execution_count="14">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Import the TensorFlow Classifier from the ART library</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Import the FastGradientMethod and ProjectedGradientDescent attacks from the ART library</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> art.estimators.classification <span class="im">import</span> TensorFlowV2Classifier</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> art.attacks.evasion <span class="im">import</span> FastGradientMethod, ProjectedGradientDescent</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-16" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616773422,&quot;user_tz&quot;:420,&quot;elapsed&quot;:4,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-execution_count="15">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a TensorFlow Classifier object for the model</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co"># State number of classes, input shape, input values (clipped to the range [0, 1]), and loss object</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>classifier <span class="op">=</span> TensorFlowV2Classifier(model<span class="op">=</span>model, nb_classes<span class="op">=</span><span class="dv">10</span>, input_shape<span class="op">=</span>(<span class="dv">128</span>, <span class="dv">128</span>, <span class="dv">3</span>), clip_values<span class="op">=</span>(<span class="dv">0</span>, <span class="dv">1</span>),</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                                    loss_object<span class="op">=</span>tensorflow.keras.losses.SparseCategoricalCrossentropy())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616773422,&quot;user_tz&quot;:420,&quot;elapsed&quot;:1,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-execution_count="16">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the first 200 test images for creating adversarial samples</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>adv_imgs <span class="op">=</span> test_images[<span class="dv">0</span>:<span class="dv">200</span>]</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>adv_labels <span class="op">=</span> test_labels[<span class="dv">0</span>:<span class="dv">200</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-18" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616777123,&quot;user_tz&quot;:420,&quot;elapsed&quot;:3699,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="7e2f2dd4-78e3-43c0-a969-01f566391dc6" data-execution_count="17">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># FGSM attack for the first image with espilon=30./255</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>attack_fgsm <span class="op">=</span> FastGradientMethod(estimator<span class="op">=</span>classifier, eps<span class="op">=</span><span class="fl">30.</span><span class="op">/</span><span class="dv">255</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>fgsm_attack_adv_imgs <span class="op">=</span> attack_fgsm.generate(adv_imgs[<span class="dv">0</span>:<span class="dv">10</span>])</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>plt.matshow(np.squeeze(fgsm_attack_adv_imgs[<span class="dv">0</span>]))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-19" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616795642,&quot;user_tz&quot;:420,&quot;elapsed&quot;:18518,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="d2fc4d88-ccdf-4046-f9db-09fdb50a6f81" data-execution_count="18">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># FGSM attack with espilon=10./155</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>attack_fgsm <span class="op">=</span> FastGradientMethod(estimator<span class="op">=</span>classifier, eps<span class="op">=</span><span class="fl">10.</span><span class="op">/</span><span class="dv">255</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>fgsm_attack_adv_imgs <span class="op">=</span> attack_fgsm.generate(adv_imgs)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>loss_test, accuracy_test <span class="op">=</span> model.evaluate(fgsm_attack_adv_imgs, adv_labels)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>perturbation <span class="op">=</span> np.mean(np.<span class="bu">abs</span>((fgsm_attack_adv_imgs <span class="op">-</span> adv_imgs)))</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Accuracy on adversarial test data: </span><span class="sc">{:4.2f}</span><span class="st">%'</span>.<span class="bu">format</span>(accuracy_test <span class="op">*</span> <span class="dv">100</span>))</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Average perturbation: </span><span class="sc">{:4.2f}</span><span class="st">'</span>.<span class="bu">format</span>(perturbation))</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>plt.matshow(np.squeeze(fgsm_attack_adv_imgs[<span class="dv">0</span>]))</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">3s</span> 482ms/step - accuracy: 0.2916 - loss: 5.8729
+
+Accuracy on adversarial test data: 28.00%
+
+Average perturbation: 0.04
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-19-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-20" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768616815490,&quot;user_tz&quot;:420,&quot;elapsed&quot;:19846,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="3c0fb93d-0618-4c4d-c502-0636def41b2b" data-execution_count="19">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># FGSM attack for various epsilon values</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>epsilon <span class="op">=</span> [<span class="fl">0.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">1.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">3.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">5.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">8.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">20.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">50.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">80.</span><span class="op">/</span><span class="dv">255</span>]</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>fgsm_attack_acc <span class="op">=</span> []</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> eps <span class="kw">in</span> epsilon:</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    attack_fgsm <span class="op">=</span> FastGradientMethod(estimator<span class="op">=</span>classifier, eps<span class="op">=</span>eps)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    fgsm_attack_adv_imgs <span class="op">=</span> attack_fgsm.generate(adv_imgs)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    loss_test, accuracy_test <span class="op">=</span> model.evaluate(fgsm_attack_adv_imgs, adv_labels)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    fgsm_attack_acc.append(accuracy_test)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    perturbation <span class="op">=</span> np.mean(np.<span class="bu">abs</span>((fgsm_attack_adv_imgs <span class="op">-</span> adv_imgs)))</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Accuracy on adversarial test data: </span><span class="sc">{:4.2f}</span><span class="st">%'</span>.<span class="bu">format</span>(accuracy_test <span class="op">*</span> <span class="dv">100</span>))</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Average perturbation: </span><span class="sc">{:4.2f}</span><span class="st">'</span>.<span class="bu">format</span>(perturbation))</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    plt.matshow(np.squeeze(fgsm_attack_adv_imgs[<span class="dv">0</span>]))</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 56ms/step - accuracy: 0.8881 - loss: 0.4178
+
+Accuracy on adversarial test data: 92.50%
+
+Average perturbation: 0.00
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-20-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 57ms/step - accuracy: 0.8249 - loss: 0.6046
+
+Accuracy on adversarial test data: 83.00%
+
+Average perturbation: 0.00
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-20-output-4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 56ms/step - accuracy: 0.5065 - loss: 2.6010
+
+Accuracy on adversarial test data: 52.00%
+
+Average perturbation: 0.01
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-20-output-6.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 57ms/step - accuracy: 0.3899 - loss: 4.2705
+
+Accuracy on adversarial test data: 39.50%
+
+Average perturbation: 0.02
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-20-output-8.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 57ms/step - accuracy: 0.3061 - loss: 5.5434
+
+Accuracy on adversarial test data: 30.50%
+
+Average perturbation: 0.03
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-20-output-10.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 57ms/step - accuracy: 0.2483 - loss: 5.6062
+
+Accuracy on adversarial test data: 23.00%
+
+Average perturbation: 0.07
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-20-output-12.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 56ms/step - accuracy: 0.1965 - loss: 3.2752
+
+Accuracy on adversarial test data: 20.00%
+
+Average perturbation: 0.17
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-20-output-14.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 57ms/step - accuracy: 0.1640 - loss: 3.0974
+
+Accuracy on adversarial test data: 16.00%
+
+Average perturbation: 0.26
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-20-output-16.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-21" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768617028243,&quot;user_tz&quot;:420,&quot;elapsed&quot;:212748,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="4a490656-baea-448b-838e-c3db73f017d5" data-execution_count="20">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PGD attack</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>pgd_attack_acc <span class="op">=</span> []</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> eps <span class="kw">in</span> epsilon:</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    attack_pgd <span class="op">=</span> ProjectedGradientDescent(estimator<span class="op">=</span>classifier, eps<span class="op">=</span>eps, max_iter<span class="op">=</span><span class="dv">20</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    pgd_attack_adv_imgs <span class="op">=</span> attack_pgd.generate(adv_imgs)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    loss_test, accuracy_test <span class="op">=</span> model.evaluate(pgd_attack_adv_imgs, adv_labels)</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    pgd_attack_acc.append(accuracy_test)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    perturbation <span class="op">=</span> np.mean(np.<span class="bu">abs</span>((pgd_attack_adv_imgs <span class="op">-</span> adv_imgs)))</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Accuracy on adversarial test data: </span><span class="sc">{:4.2f}</span><span class="st">%'</span>.<span class="bu">format</span>(accuracy_test <span class="op">*</span> <span class="dv">100</span>))</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Average perturbation: </span><span class="sc">{:4.2f}</span><span class="st">'</span>.<span class="bu">format</span>(perturbation))</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    plt.matshow(np.squeeze(pgd_attack_adv_imgs[<span class="dv">0</span>]))</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major":2,"version_minor":0,"model_id":"bdc70e7721b84ec4b49021a69a116c6c","quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 56ms/step - accuracy: 0.8881 - loss: 0.4178
+
+Accuracy on adversarial test data: 92.50%
+
+Average perturbation: 0.00
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-21-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major":2,"version_minor":0,"model_id":"e25b5629c8f440889a32909885ef98d7","quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 57ms/step - accuracy: 0.7958 - loss: 0.7917
+
+Accuracy on adversarial test data: 80.50%
+
+Average perturbation: 0.00
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-21-output-6.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major":2,"version_minor":0,"model_id":"4b34c51de7a84d5b9b06ca08946e4610","quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 56ms/step - accuracy: 0.4472 - loss: 3.5222
+
+Accuracy on adversarial test data: 45.50%
+
+Average perturbation: 0.01
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-21-output-9.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major":2,"version_minor":0,"model_id":"45955cc307074fbeb3bcc5c0342644b7","quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 57ms/step - accuracy: 0.3073 - loss: 5.3153
+
+Accuracy on adversarial test data: 29.50%
+
+Average perturbation: 0.02
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-21-output-12.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major":2,"version_minor":0,"model_id":"3c0bf7603bd444c88b84dd0c1f6818d6","quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 57ms/step - accuracy: 0.2793 - loss: 5.8348
+
+Accuracy on adversarial test data: 27.00%
+
+Average perturbation: 0.03
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-21-output-15.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major":2,"version_minor":0,"model_id":"8f707156a9e449f0a0a5af2d2c69f764","quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 56ms/step - accuracy: 0.1020 - loss: 19.3470
+
+Accuracy on adversarial test data: 6.50%
+
+Average perturbation: 0.06
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-21-output-18.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major":2,"version_minor":0,"model_id":"6909eb3f7e9349398cc65d6662ef9749","quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 57ms/step - accuracy: 0.0734 - loss: 65.0707
+
+Accuracy on adversarial test data: 5.00%
+
+Average perturbation: 0.12
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-21-output-21.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"version_major":2,"version_minor":0,"model_id":"68d0a51b69d146579c7ec30a9a37cf78","quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">7/7</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 57ms/step - accuracy: 0.0734 - loss: 94.3012
+
+Accuracy on adversarial test data: 5.00%
+
+Average perturbation: 0.18
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-21-output-24.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="targeted-adversarial-attack" class="level1">
+<h1>Targeted Adversarial Attack</h1>
+<p>Misclassify Church images as Gas Pump images</p>
+<div id="cell-23" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768617028252,&quot;user_tz&quot;:420,&quot;elapsed&quot;:4,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="f743a9de-1595-4a6e-86e6-791873bddee9" data-execution_count="21">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Collect all "Church" images from the dataset</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>church_images_list <span class="op">=</span> []</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, label <span class="kw">in</span> <span class="bu">enumerate</span>(test_labels):</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> label<span class="op">==</span><span class="dv">4</span>:</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>      church_images_list.append(test_images[i])</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>church_images <span class="op">=</span> np.asarray(church_images_list)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(church_images.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>(249, 128, 128, 3)</code></pre>
+</div>
+</div>
+<div id="cell-24" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768617029060,&quot;user_tz&quot;:420,&quot;elapsed&quot;:807,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="544a72e7-a717-4d3c-88ff-b538fb810e03" data-execution_count="22">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot a few images to check if the labels are accurate</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="dv">10</span>))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">9</span>):</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    i <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="bu">len</span>(church_images), <span class="dv">1</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> plt.subplot(<span class="dv">3</span>, <span class="dv">3</span>, n<span class="op">+</span><span class="dv">1</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>    plt.imshow(church_images[i[<span class="dv">0</span>]])</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>    plt.axis(<span class="st">'off'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-23-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-25" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768617029065,&quot;user_tz&quot;:420,&quot;elapsed&quot;:1,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-execution_count="23">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Target labels are "Gas pump" (class label is 7)</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>labels_target <span class="op">=</span> <span class="dv">7</span><span class="op">*</span>np.ones((<span class="bu">len</span>(church_images),<span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-26" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768617029073,&quot;user_tz&quot;:420,&quot;elapsed&quot;:6,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="6b044723-99c8-4bd3-e28b-3fe8cde49184" data-execution_count="24">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>labels_target.shape</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="24">
+<pre><code>(249, 1)</code></pre>
+</div>
+</div>
+<div id="cell-27" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768617029079,&quot;user_tz&quot;:420,&quot;elapsed&quot;:3,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-execution_count="25">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Church labels</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>labels_church <span class="op">=</span> <span class="dv">4</span><span class="op">*</span>np.ones((<span class="bu">len</span>(church_images),<span class="dv">1</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-28" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768617035082,&quot;user_tz&quot;:420,&quot;elapsed&quot;:6000,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="5edf8a60-4838-4c6a-ceae-cb65f3b97e68" data-execution_count="26">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate the accuracy of the model on the set of church images</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>loss_test, accuracy_test <span class="op">=</span> model.evaluate(np.array(church_images), labels_church)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Accuracy on clean test data: </span><span class="sc">{:4.2f}</span><span class="st">%'</span>.<span class="bu">format</span>(accuracy_test <span class="op">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">6s</span> 784ms/step - accuracy: 0.9302 - loss: 0.3688
+
+Accuracy on clean test data: 94.78%
+</pre>
+</div>
+</div>
+</div>
+<div id="cell-29" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;executionInfo&quot;,&quot;value&quot;:{&quot;status&quot;:&quot;ok&quot;,&quot;timestamp&quot;:1768617071494,&quot;user_tz&quot;:420,&quot;elapsed&quot;:36409,&quot;user&quot;:{&quot;displayName&quot;:&quot;Aleksandar Vakanski&quot;,&quot;userId&quot;:&quot;07675307153279708378&quot;}}}" data-outputid="d5329edb-ef5b-425e-eca7-db0fb9e03b78" data-execution_count="27">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a> <span class="co"># FGSM targetted attack</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>epsilon <span class="op">=</span> [<span class="fl">0.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">1.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">3.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">5.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">8.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">20.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">50.</span><span class="op">/</span><span class="dv">255</span>, <span class="fl">80.</span><span class="op">/</span><span class="dv">255</span>]</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>fgsm_target_attack_acc <span class="op">=</span> []</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> eps <span class="kw">in</span> epsilon:</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    attack_fgsm_tar <span class="op">=</span> FastGradientMethod(estimator<span class="op">=</span>classifier, eps<span class="op">=</span>eps, targeted<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    fgsm_attack_adv_imgs_tar <span class="op">=</span> attack_fgsm_tar.generate(church_images, labels_target)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    loss_test, accuracy_test <span class="op">=</span> model.evaluate(fgsm_attack_adv_imgs_tar, labels_target)</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>    fgsm_target_attack_acc.append(accuracy_test)</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>    perturbation <span class="op">=</span> np.mean(np.<span class="bu">abs</span>((fgsm_attack_adv_imgs_tar <span class="op">-</span> church_images)))</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Accuracy on adversarial test data: </span><span class="sc">{:4.2f}</span><span class="st">%'</span>.<span class="bu">format</span>(accuracy_test <span class="op">*</span> <span class="dv">100</span>))</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Average perturbation: </span><span class="sc">{:4.2f}</span><span class="st">'</span>.<span class="bu">format</span>(perturbation))</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>    preds <span class="op">=</span> model.predict(fgsm_attack_adv_imgs_tar)</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Predicted class:'</span>, np.argmax(preds, axis<span class="op">=-</span><span class="dv">1</span>))</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    loss_test, accuracy_test <span class="op">=</span> model.evaluate(fgsm_attack_adv_imgs_tar, labels_church)</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Accuracy on church labels: </span><span class="sc">{:4.2f}</span><span class="st">%'</span>.<span class="bu">format</span>(accuracy_test <span class="op">*</span> <span class="dv">100</span>))</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Predicted as target labels: </span><span class="sc">{:4.2f}</span><span class="st">%'</span>.<span class="bu">format</span>(<span class="dv">100</span><span class="op">*</span>np.<span class="bu">sum</span>(np.argmax(preds, axis<span class="op">=-</span><span class="dv">1</span>)<span class="op">==</span><span class="dv">7</span>)<span class="op">/</span><span class="bu">len</span>(labels_target)))</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>    plt.matshow(np.squeeze(fgsm_attack_adv_imgs_tar[<span class="dv">0</span>]))</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.0111 - loss: 12.2778
+
+Accuracy on adversarial test data: 0.80%
+
+Average perturbation: 0.00
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">2s</span> 139ms/step
+
+Predicted class: [2 4 4 4 9 9 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 9 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 7 4 8 4 4 4 4 4 4 4 4 4 4 4 4 4 7 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 9 4 4 4 4 4 8 4 4
+
+ 4 4 4 4 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 9 4 4 4 4 5 4 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.9302 - loss: 0.3688
+
+Accuracy on church labels: 94.78%
+
+Predicted as target labels: 0.80%
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-28-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 60ms/step - accuracy: 0.0637 - loss: 9.1548
+
+Accuracy on adversarial test data: 5.62%
+
+Average perturbation: 0.00
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [3 4 4 4 9 0 4 4 7 4 4 4 2 4 7 4 4 4 4 6 4 4 4 4 4 4 4 4 4 4 4 4 4 5 4 4 4
+
+ 7 4 4 4 4 7 4 4 4 4 4 4 7 4 8 4 4 4 7 4 4 4 4 4 4 4 4 4 7 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 9 4 2 4 4 4 4 4 4 4 4 1 4 4 7 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 7 6 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 2 4 4 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 5 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 6 4
+
+ 4 4 4 4 4 9 4 4 4 4 7 4 4 4 4 4 6 7 4 4 7 4 4 4 4 4 4 4 4 4 4 4 4 4 4 7 2
+
+ 4 4 7 4 4 9 8 4 4 4 4 4 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.8418 - loss: 0.6779
+
+Accuracy on church labels: 85.94%
+
+Predicted as target labels: 5.62%
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-28-output-4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 60ms/step - accuracy: 0.1786 - loss: 5.6006
+
+Accuracy on adversarial test data: 17.27%
+
+Average perturbation: 0.01
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [3 6 3 4 9 0 4 7 7 4 9 4 2 2 7 7 4 3 4 6 4 7 4 4 7 4 4 4 4 4 4 3 6 5 3 9 4
+
+ 7 4 6 4 9 7 9 4 4 7 4 5 7 4 2 4 8 3 7 8 4 3 7 5 4 4 2 4 7 7 4 4 7 4 9 8 1
+
+ 7 2 7 4 4 9 4 4 4 4 4 9 4 2 4 4 4 4 4 6 2 7 1 3 4 7 4 4 4 4 4 4 4 7 4 4 4
+
+ 4 4 4 4 8 4 4 4 7 4 2 4 9 4 8 7 7 6 4 5 2 4 3 4 5 7 2 3 4 5 4 4 9 7 4 5 7
+
+ 4 2 4 6 2 4 4 7 8 4 7 5 7 5 8 4 4 4 9 5 4 7 4 5 9 4 8 0 4 4 4 4 4 8 6 6 2
+
+ 4 7 6 4 2 4 7 7 4 4 7 5 4 4 7 4 6 7 6 4 7 4 8 4 9 4 4 4 4 4 4 7 7 4 4 7 2
+
+ 4 4 7 9 9 9 8 9 4 7 4 4 2 7 3 4 4 4 9 2 4 2 4 2 4 4 4]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 62ms/step - accuracy: 0.4672 - loss: 2.7112
+
+Accuracy on church labels: 47.79%
+
+Predicted as target labels: 17.27%
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-28-output-6.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.2311 - loss: 4.4093
+
+Accuracy on adversarial test data: 24.10%
+
+Average perturbation: 0.02
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 60ms/step
+
+Predicted class: [7 6 3 4 9 0 4 6 7 4 9 4 2 2 7 7 4 3 4 6 0 7 4 2 7 4 5 0 4 4 4 3 2 5 3 9 4
+
+ 7 7 6 3 9 7 9 4 4 7 5 5 7 5 2 4 8 3 7 8 8 3 7 5 4 4 7 9 7 7 4 4 7 4 9 8 1
+
+ 7 2 7 4 4 9 9 7 4 9 8 9 4 2 8 7 7 4 7 6 2 7 1 3 8 7 4 4 9 4 4 4 3 7 4 7 9
+
+ 4 4 4 4 2 0 4 9 7 9 2 7 9 4 8 7 7 2 8 5 2 9 3 4 5 7 2 3 4 2 2 4 9 7 4 5 7
+
+ 4 2 4 2 4 4 4 7 8 4 7 5 7 0 8 4 4 7 9 5 4 7 4 0 3 4 8 0 2 7 3 4 4 7 6 6 2
+
+ 7 7 6 4 2 4 7 7 7 2 7 5 4 4 7 9 6 7 6 4 7 4 8 7 9 4 5 4 4 5 4 7 7 4 7 7 2
+
+ 4 4 7 9 9 9 8 9 4 7 7 4 2 7 3 8 2 4 3 7 4 2 4 2 4 4 4]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 60ms/step - accuracy: 0.2940 - loss: 4.5717
+
+Accuracy on church labels: 30.12%
+
+Predicted as target labels: 24.10%
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-28-output-8.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.2876 - loss: 4.0006
+
+Accuracy on adversarial test data: 28.92%
+
+Average perturbation: 0.03
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [7 6 3 7 9 8 4 7 7 9 9 4 2 2 7 7 4 3 4 6 0 7 4 2 7 7 5 0 4 7 4 3 2 5 3 3 4
+
+ 3 8 6 3 9 7 9 9 7 7 5 5 7 5 5 7 8 3 7 8 3 3 7 2 2 4 7 9 7 7 4 9 7 4 9 8 1
+
+ 7 2 7 4 4 9 9 7 9 9 8 8 9 2 0 7 7 4 7 6 2 7 1 3 3 7 4 7 3 7 7 4 3 7 9 7 9
+
+ 9 9 9 4 2 0 8 9 7 9 0 7 9 3 8 7 7 2 8 5 2 9 3 4 5 7 2 3 4 2 2 4 9 3 4 5 7
+
+ 4 2 4 0 4 8 3 7 8 4 7 5 7 0 8 4 4 7 9 5 4 7 4 0 3 4 8 0 2 7 3 7 2 7 7 2 2
+
+ 7 7 6 9 2 4 7 7 7 2 7 5 4 7 7 9 6 7 6 4 7 4 8 7 9 7 5 2 3 5 0 7 7 4 7 7 2
+
+ 4 7 7 9 9 8 8 9 4 7 7 7 2 2 3 8 2 2 3 7 4 2 7 2 3 5 9]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.1580 - loss: 6.1012
+
+Accuracy on church labels: 15.26%
+
+Predicted as target labels: 28.92%
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-28-output-10.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.1493 - loss: 4.3406
+
+Accuracy on adversarial test data: 17.27%
+
+Average perturbation: 0.07
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [4 3 3 4 9 8 4 3 7 3 9 9 3 2 7 7 3 3 4 3 0 3 4 5 3 6 5 3 3 4 5 3 3 5 3 3 3
+
+ 3 8 3 3 3 3 0 9 5 7 5 5 3 5 5 7 8 3 7 8 3 3 0 2 2 4 7 3 7 3 7 9 7 9 9 8 1
+
+ 3 5 7 9 3 9 9 7 8 9 8 8 3 6 5 7 3 9 7 3 2 7 1 5 3 7 2 3 3 3 3 4 3 7 9 3 8
+
+ 9 8 9 7 5 0 3 9 3 9 0 7 9 3 8 7 7 5 8 5 2 3 3 9 5 7 2 3 4 5 2 9 9 3 4 5 3
+
+ 9 7 8 0 4 8 3 3 8 9 7 5 7 0 5 5 4 7 9 5 4 3 9 0 3 5 8 0 2 7 3 3 2 3 3 8 2
+
+ 7 3 3 3 2 4 7 3 7 2 7 5 4 5 7 9 3 7 3 5 7 4 8 3 9 7 0 5 3 5 3 7 7 3 3 7 5
+
+ 9 7 7 9 0 8 8 3 9 7 3 3 2 2 3 3 9 2 3 7 3 2 7 2 3 5 9]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 62ms/step - accuracy: 0.0860 - loss: 6.4241
+
+Accuracy on church labels: 6.43%
+
+Predicted as target labels: 17.27%
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-28-output-12.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.0134 - loss: 5.2458
+
+Accuracy on adversarial test data: 0.80%
+
+Average perturbation: 0.18
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [4 4 3 8 8 8 3 8 5 8 9 8 3 5 3 7 3 5 4 8 3 3 4 5 3 3 5 3 4 4 8 3 8 5 3 5 3
+
+ 8 4 3 3 8 5 5 3 5 4 5 3 3 8 5 4 8 3 3 8 8 3 8 5 9 4 5 8 4 3 4 3 8 9 8 8 8
+
+ 3 8 3 3 8 9 9 8 5 3 9 3 3 4 5 4 8 4 4 3 8 5 3 5 8 7 4 4 8 3 8 4 8 3 4 4 4
+
+ 9 8 8 9 5 3 3 4 3 9 3 3 9 4 8 8 3 5 3 8 5 9 8 9 8 3 5 8 3 8 3 9 3 8 4 5 5
+
+ 3 3 8 5 5 3 8 3 8 9 3 5 8 4 5 8 4 3 9 3 4 3 8 8 3 5 8 8 3 3 4 4 5 3 3 9 4
+
+ 5 8 3 9 5 4 3 3 4 3 3 3 4 4 4 8 9 3 3 5 5 4 8 3 8 3 5 5 4 5 3 3 3 4 8 3 5
+
+ 9 4 4 8 8 8 8 3 4 3 3 3 3 3 5 3 4 4 3 5 3 4 3 3 5 3 3]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 60ms/step - accuracy: 0.1734 - loss: 2.7925
+
+Accuracy on church labels: 18.07%
+
+Predicted as target labels: 0.80%
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-28-output-14.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.0000e+00 - loss: 5.0156
+
+Accuracy on adversarial test data: 0.00%
+
+Average perturbation: 0.26
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [8 4 4 8 8 8 3 8 8 8 3 8 8 4 8 4 4 8 4 8 8 8 8 5 8 8 8 3 4 5 8 8 8 4 8 4 5
+
+ 8 4 3 8 8 8 8 8 8 8 8 8 3 8 5 8 8 8 3 9 8 8 4 8 9 4 8 8 4 8 4 8 8 8 8 8 8
+
+ 3 8 8 4 8 8 8 8 8 8 9 8 8 4 8 4 8 4 4 8 8 8 8 8 8 4 4 4 8 8 8 4 4 8 4 8 4
+
+ 8 8 8 4 5 4 5 4 8 9 8 8 3 4 8 8 8 8 4 4 8 9 8 9 8 8 5 8 8 8 4 8 8 8 4 8 5
+
+ 8 9 8 8 5 8 8 3 8 9 4 8 9 4 5 4 4 3 8 8 4 8 4 4 8 5 8 8 3 4 4 4 8 8 3 8 8
+
+ 8 8 8 9 8 8 4 4 4 8 8 8 4 4 4 8 8 8 8 8 4 4 4 8 8 8 5 4 4 5 8 8 8 4 8 8 4
+
+ 8 4 4 8 4 8 8 8 4 8 8 3 8 8 8 4 4 4 8 8 4 4 8 8 5 8 8]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.2312 - loss: 1.7313
+
+Accuracy on church labels: 26.51%
+
+Predicted as target labels: 0.00%
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-28-output-16.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-30" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;colab&quot;,&quot;value&quot;:{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:1000}}" data-outputid="2dfa3ef5-17b2-42bd-a29a-3357bfd660e8" data-execution_count="28">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PGD targetted attack</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>pgd_target_attack_acc <span class="op">=</span> []</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> eps <span class="kw">in</span> epsilon:</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    attack_pgd_tar <span class="op">=</span> ProjectedGradientDescent(estimator<span class="op">=</span>classifier, eps<span class="op">=</span>eps, targeted<span class="op">=</span><span class="va">True</span>, verbose<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    pgd_attack_adv_imgs_tar <span class="op">=</span> attack_pgd_tar.generate(church_images, labels_target)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>    loss_test, accuracy_test <span class="op">=</span> model.evaluate(pgd_attack_adv_imgs_tar, labels_target)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    pgd_target_attack_acc.append(accuracy_test)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>    perturbation <span class="op">=</span> np.mean(np.<span class="bu">abs</span>((pgd_attack_adv_imgs_tar <span class="op">-</span> church_images)))</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Accuracy on adversarial test data: </span><span class="sc">{:4.2f}</span><span class="st">%'</span>.<span class="bu">format</span>(accuracy_test <span class="op">*</span> <span class="dv">100</span>))</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Average perturbation: </span><span class="sc">{:4.2f}</span><span class="st">'</span>.<span class="bu">format</span>(perturbation))</span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    preds <span class="op">=</span> model.predict(pgd_attack_adv_imgs_tar)</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Predicted class:'</span>, np.argmax(preds, axis<span class="op">=-</span><span class="dv">1</span>))</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>    loss_test, accuracy_test <span class="op">=</span> model.evaluate(pgd_attack_adv_imgs_tar, labels_church)</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Accuracy on church labels: </span><span class="sc">{:4.2f}</span><span class="st">%'</span>.<span class="bu">format</span>(accuracy_test <span class="op">*</span> <span class="dv">100</span>))</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-19"><a href="#cb33-19" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">'Predicted as target labels: </span><span class="sc">{:4.2f}</span><span class="st">%'</span>.<span class="bu">format</span>(<span class="dv">100</span><span class="op">*</span>np.<span class="bu">sum</span>(np.argmax(preds, axis<span class="op">=-</span><span class="dv">1</span>)<span class="op">==</span><span class="dv">7</span>)<span class="op">/</span><span class="bu">len</span>(labels_target)))</span>
+<span id="cb33-20"><a href="#cb33-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-21"><a href="#cb33-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="dv">10</span><span class="op">*</span><span class="st">'*'</span>)</span>
+<span id="cb33-22"><a href="#cb33-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-23"><a href="#cb33-23" aria-hidden="true" tabindex="-1"></a>    plt.matshow(np.squeeze(pgd_attack_adv_imgs_tar[<span class="dv">0</span>]))</span>
+<span id="cb33-24"><a href="#cb33-24" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb33-25"><a href="#cb33-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-26"><a href="#cb33-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Training time: </span><span class="sc">%s</span><span class="st">'</span> <span class="op">%</span> (now() <span class="op">-</span> t))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 62ms/step - accuracy: 0.0111 - loss: 12.2778
+
+Accuracy on adversarial test data: 0.80%
+
+Average perturbation: 0.00
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [2 4 4 4 9 9 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 9 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 7 4 8 4 4 4 4 4 4 4 4 4 4 4 4 4 7 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 9 4 4 4 4 4 8 4 4
+
+ 4 4 4 4 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 9 4 4 4 4 5 4 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.9302 - loss: 0.3688
+
+Accuracy on church labels: 94.78%
+
+Predicted as target labels: 0.80%
+
+**********
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-29-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.0520 - loss: 9.0916
+
+Accuracy on adversarial test data: 5.22%
+
+Average perturbation: 0.00
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [4 4 4 4 9 9 4 4 7 4 4 4 4 4 4 4 4 4 4 4 4 4 9 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 7 4 4 4 4 4 4 7 4 8 4 4 4 7 4 4 4 4 4 4 4 4 4 7 7 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 7 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 7 4 4 4 4 4 4 4 4 4 4 4 9 4 4 4 4 4 8 4 4
+
+ 4 4 4 4 2 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 9 4 4 4 4 7 4 2 4 4 4 6 7 4 4 7 4 4 4 4 4 4 4 4 4 4 4 4 4 4 7 4
+
+ 4 4 7 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.8991 - loss: 0.4936
+
+Accuracy on church labels: 90.76%
+
+Predicted as target labels: 5.22%
+
+**********
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-29-output-4.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.1616 - loss: 5.2531
+
+Accuracy on adversarial test data: 17.27%
+
+Average perturbation: 0.01
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 60ms/step
+
+Predicted class: [4 4 4 4 9 9 4 4 7 4 4 4 4 4 7 7 4 4 4 7 4 4 9 4 7 4 4 4 4 4 4 4 4 4 3 4 4
+
+ 4 4 4 4 4 7 4 4 4 7 4 3 7 4 8 4 4 4 7 8 4 4 4 4 4 4 4 4 7 7 4 4 4 4 9 4 4
+
+ 4 4 7 4 4 9 4 4 4 4 4 4 4 4 4 4 4 4 4 4 7 7 3 4 4 7 4 4 4 7 4 4 4 7 4 7 4
+
+ 4 4 4 4 4 4 4 4 7 4 4 7 9 4 4 4 7 7 4 4 4 4 7 4 4 4 4 4 9 4 4 4 4 7 8 4 7
+
+ 4 4 4 4 2 4 4 4 4 4 7 4 7 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 7 4 4 4 4 7 4 4 4
+
+ 4 7 4 4 4 9 7 7 7 4 7 4 2 4 7 4 4 7 4 4 7 4 4 4 4 4 4 4 4 4 4 7 7 4 4 7 4
+
+ 4 4 7 4 4 4 4 4 4 7 4 4 4 4 4 4 4 4 4 7 4 4 4 4 4 4 4]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.7552 - loss: 0.9898
+
+Accuracy on church labels: 76.31%
+
+Predicted as target labels: 17.27%
+
+**********
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-29-output-6.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 62ms/step - accuracy: 0.2265 - loss: 4.4818
+
+Accuracy on adversarial test data: 23.69%
+
+Average perturbation: 0.02
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 60ms/step
+
+Predicted class: [4 4 4 7 9 9 4 4 7 4 4 4 4 4 7 7 4 4 4 7 4 7 9 4 7 7 4 4 4 4 4 4 4 4 4 4 4
+
+ 4 4 4 4 4 7 4 4 7 4 4 4 7 4 8 4 4 4 7 4 7 4 4 4 4 4 4 4 7 7 4 4 4 4 4 4 2
+
+ 4 4 4 4 4 4 4 7 4 4 4 4 4 4 4 4 4 4 7 7 7 7 4 4 4 7 4 4 4 4 4 4 7 7 4 4 4
+
+ 4 7 4 4 4 4 4 4 4 4 4 4 4 4 4 7 7 7 7 4 7 4 7 4 2 4 4 7 9 4 4 4 4 7 8 4 7
+
+ 4 7 4 4 2 4 7 4 4 4 7 4 7 4 7 4 4 7 4 4 4 4 4 4 4 4 4 4 4 7 4 4 4 4 4 4 7
+
+ 7 7 4 7 4 7 4 7 7 4 7 4 4 4 4 4 7 7 7 4 4 4 8 4 4 4 4 4 4 4 4 4 7 4 7 4 7
+
+ 4 4 7 4 4 4 4 4 7 7 4 4 4 4 4 4 4 4 4 7 4 4 4 4 4 7 4]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 62ms/step - accuracy: 0.7206 - loss: 1.1996
+
+Accuracy on church labels: 72.29%
+
+Predicted as target labels: 23.69%
+
+**********
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-29-output-8.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.2171 - loss: 4.9271
+
+Accuracy on adversarial test data: 26.10%
+
+Average perturbation: 0.03
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [3 7 4 4 9 3 4 4 7 4 4 4 4 4 7 4 4 4 4 7 4 4 9 4 4 4 4 4 4 4 4 5 7 4 3 7 4
+
+ 4 4 6 4 4 7 4 4 4 4 4 4 7 4 5 4 4 4 7 4 4 4 4 4 4 7 4 4 7 4 4 4 4 4 4 4 4
+
+ 7 4 7 4 4 4 4 7 4 4 4 6 4 7 7 4 4 4 7 7 7 4 7 4 4 7 4 7 4 7 4 4 7 7 7 7 4
+
+ 4 4 4 7 4 4 3 4 4 4 4 4 4 4 4 7 7 7 7 4 4 4 4 2 7 7 4 7 9 4 4 4 4 4 4 4 4
+
+ 4 7 4 4 2 4 4 7 4 7 7 4 7 4 7 4 4 7 4 4 4 4 4 4 4 4 4 5 4 4 4 4 4 7 4 4 4
+
+ 4 4 4 4 4 7 4 4 7 4 7 4 7 7 4 4 7 7 7 4 7 4 4 4 4 7 4 4 4 4 4 4 7 4 7 4 4
+
+ 4 4 7 4 4 4 4 4 4 7 4 7 7 4 7 4 7 4 3 7 7 4 4 7 7 4 4]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.6951 - loss: 1.4443
+
+Accuracy on church labels: 67.87%
+
+Predicted as target labels: 26.10%
+
+**********
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-29-output-10.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.9271 - loss: 0.3635
+
+Accuracy on adversarial test data: 93.17%
+
+Average perturbation: 0.06
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 60ms/step
+
+Predicted class: [7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 4 7 7 7 7 7 7 7 7 7 4 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 7 7 7 7 5 0 7 7 7 7 7 7 7 7 7 7 7 7 7 4 7 7 7 7 7 4 7 7 7 7 7 7
+
+ 7 7 7 4 4 7 7 7 7 7 7 7 7 7 7 7 7 4 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 4 7 7 7 7 9 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 7 7 7 7 4 7 7 7 7 7 4 7 7 7 7 7 7 4 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 4 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 4 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 0 7 7 7]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 62ms/step - accuracy: 0.0565 - loss: 13.6113
+
+Accuracy on church labels: 5.22%
+
+Predicted as target labels: 93.17%
+
+**********
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-29-output-12.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.8500 - loss: 0.5301
+
+Accuracy on adversarial test data: 85.94%
+
+Average perturbation: 0.11
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [7 7 7 7 7 3 7 7 7 4 7 7 7 7 7 7 3 7 7 7 3 7 7 7 7 7 3 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 4 7 7 4 3 7 7 7 7 3 4 7 4 7 7 7 3 7 7 7 7 7 7 7 7 7 7 7 7 7 7 3
+
+ 7 7 7 7 7 7 7 7 7 7 7 7 7 3 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 4 7 7
+
+ 8 4 7 7 7 5 4 4 7 7 7 7 7 3 8 7 7 7 7 7 3 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 7 7 7 7 7 7 7 3 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 7 7 7 7 7 7 7 7 7 3 3 7 7 7 7 7 7 7 7 7 7 7 3 7 7 4 7 7 3 7 3 7
+
+ 3 7 7 7 7 7 7 7 4 7 4 7 7 7 7 7 7 4 4 7 7 7 7 7 7 7 7]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.0547 - loss: 16.6772
+
+Accuracy on church labels: 5.62%
+
+Predicted as target labels: 85.94%
+
+**********
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-29-output-14.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<div class="ansi-escaped-output">
+<pre><span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.9775 - loss: 0.0476
+
+Accuracy on adversarial test data: 98.39%
+
+Average perturbation: 0.17
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 59ms/step
+
+Predicted class: [7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 3 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 4 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+
+ 4 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 7 4 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+
+ 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7]
+
+<span class="ansi-bold">8/8</span> <span class="ansi-green-fg">━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-bold">0s</span> 61ms/step - accuracy: 0.0126 - loss: 23.4506
+
+Accuracy on church labels: 1.20%
+
+Predicted as target labels: 98.39%
+
+**********
+</pre>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="White_Box_Evasion_Attacks_TensorFlow_files/figure-html/cell-29-output-16.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Training time: 0:35:40.423754</code></pre>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+// Left sidebar: start with the "Course Information" section collapsed
+// while lecture sections stay expanded (collapse-level: 2 expands all;
+// Quarto has no per-section setting, so this collapses just that one).
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("#quarto-sidebar .sidebar-item-section").forEach(function (sec) {
+    var text = sec.querySelector(":scope > .sidebar-item-container .menu-text");
+    if (!text || text.textContent.trim() !== "Course Information") return;
+    var sub = sec.querySelector(":scope > ul.collapse");
+    if (sub) sub.classList.remove("show");
+    sec.querySelectorAll(":scope > .sidebar-item-container a[data-bs-toggle]").forEach(function (a) {
+      a.setAttribute("aria-expanded", "false");
+    });
+  });
+});
+</script>
+<script>
+// Add expand/collapse arrows to right-pane TOC entries that have subsections.
+// Clicking the arrow toggles the subsection list without navigating; an
+// inline display style is used so Quarto's scroll-spy can't override it.
+document.addEventListener("DOMContentLoaded", function () {
+  var toc = document.getElementById("TOC");
+  if (!toc) return;
+  toc.querySelectorAll("li").forEach(function (li) {
+    var sub = li.querySelector(":scope > ul");
+    var link = li.querySelector(":scope > a");
+    if (!sub || !link) return;
+    var btn = document.createElement("span");
+    btn.className = "toc-chevron";
+    btn.setAttribute("role", "button");
+    btn.setAttribute("tabindex", "0");
+    btn.setAttribute("aria-label", "Toggle subsections");
+    btn.setAttribute("title", "Show/hide subsections");
+    btn.setAttribute("aria-expanded", "false");
+    link.after(btn);
+    function toggle(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var open = sub.style.display === "block";
+      sub.style.display = open ? "" : "block";
+      btn.classList.toggle("toc-chevron-expanded", !open);
+      btn.setAttribute("aria-expanded", String(!open));
+    }
+    btn.addEventListener("click", toggle);
+    btn.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") toggle(e);
+    });
+  });
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/avakanski\.github\.io\/Spring-2026-Adversarial-Machine-Learning\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../Codes/FGSM_Function_TensorFlow.html" class="pagination-link" aria-label="FGSM Attack in TensorFlow">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">FGSM Attack in TensorFlow</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../Codes/White_Box_Evasion_Attacks_PyTorch.html" class="pagination-link" aria-label="White-box Evasion Attacks in PyTorch">
+        <span class="nav-page-text">White-box Evasion Attacks in PyTorch</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>CS 4727/5727 - Adversarial Machine Learning, University of Idaho, Spring 2026</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

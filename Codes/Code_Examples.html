@@ -35,6 +35,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../Codes/FGSM_Function_TensorFlow.html" rel="next">
 <link href="../Lectures/Lecture_15-Bias_and_Fairness_in_ML/Lecture_15-Bias_and_Fairness_in_ML.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -512,6 +513,363 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Overview</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/FGSM_Function_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FGSM Attack in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_PyTorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Black-box_Boundary_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Black-box Boundary Attack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/LLM_Supervised_Finetuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLM Supervised Fine-tuning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Jailbreak_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jailbreak Attacks on LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Adversarial_Training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adversarial Training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Intrusion_Detection_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Attack on Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
+ <span class="menu-text">Hello World of ML</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview (PDF)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic Regression on Iris</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random Forest on Breast Cancer</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/XGBoost_on_Titanic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">XGBoost on Titanic</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/MLPs_on_MNIST.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MLPs on MNIST</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/ResNet_on_CIFAR10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ResNet on CIFAR-10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/DistilBERT_on_IMDb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DistilBERT on IMDb</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llama 2 on Alpaca</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Qwen3 GRPO on MATH-500</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VLM Reasoning and Tool Use on MATH-500</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/FGSM_Function_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FGSM Attack in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_PyTorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Black-box_Boundary_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Black-box Boundary Attack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/LLM_Supervised_Finetuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLM Supervised Fine-tuning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Jailbreak_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jailbreak Attacks on LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Adversarial_Training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adversarial Training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Intrusion_Detection_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Attack on Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false">
+ <span class="menu-text">Hello World of ML</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview (PDF)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic Regression on Iris</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random Forest on Breast Cancer</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/XGBoost_on_Titanic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">XGBoost on Titanic</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/MLPs_on_MNIST.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MLPs on MNIST</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/ResNet_on_CIFAR10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ResNet on CIFAR-10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/DistilBERT_on_IMDb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DistilBERT on IMDb</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llama 2 on Alpaca</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Qwen3 GRPO on MATH-500</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VLM Reasoning and Tool Use on MATH-500</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/FGSM_Function_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">FGSM Attack in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_TensorFlow.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in TensorFlow</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/White_Box_Evasion_Attacks_PyTorch.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">White-box Evasion Attacks in PyTorch</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Black-box_Boundary_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Black-box Boundary Attack</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/LLM_Supervised_Finetuning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LLM Supervised Fine-tuning</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Jailbreak_Attacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Jailbreak Attacks on LLMs</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Adversarial_Training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Adversarial Training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Intrusion_Detection_Attack.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Attack on Network Intrusion Detection</span></a>
+  </div>
+</li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
+ <span class="menu-text">Hello World of ML</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Hello_World_of_ML.pdf" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview (PDF)</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logistic Regression on Iris</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Random Forest on Breast Cancer</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/XGBoost_on_Titanic.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">XGBoost on Titanic</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/MLPs_on_MNIST.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MLPs on MNIST</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/ResNet_on_CIFAR10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">ResNet on CIFAR-10</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/DistilBERT_on_IMDb.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">DistilBERT on IMDb</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Llama 2 on Alpaca</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Qwen3 GRPO on MATH-500</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">VLM Reasoning and Tool Use on MATH-500</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
       </ul>
   </li>
     </ul>
@@ -543,20 +901,113 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This section collects Jupyter notebooks with Python implementations of the adversarial attacks and defenses covered in the lectures. The notebooks accompany the lecture slides and serve as starting points for the homework assignments and the course project.</p>
-<p>Notebooks will be posted here as they become available. Each notebook can be viewed on this website, opened directly in Google Colab, or downloaded from the <a href="https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning">GitHub repository</a>.</p>
-<p>Planned examples:</p>
-<ul>
-<li>White-box evasion attacks: Fast Gradient Sign Method (FGSM), Projected Gradient Descent (PGD), and Carlini-Wagner (C&amp;W) attacks</li>
-<li>Black-box evasion attacks: transfer-based and query-based attacks</li>
-<li>Adversarial training and other defenses against evasion attacks</li>
-<li>Data poisoning and backdoor attacks</li>
-<li>Membership inference attacks and differentially private training</li>
-<li>Jailbreak and prompt injection attacks on large language models</li>
-</ul>
-<p>Students are encouraged to use the GPUs provided by Google Colab for running the notebooks.</p>
+<p>This section collects Jupyter notebooks with Python implementations of the adversarial attacks and defenses covered in the lectures. The notebooks accompany the lecture slides and serve as starting points for the homework assignments and the course project. Students are encouraged to use the GPUs provided by Google Colab for running the notebooks.</p>
+<p>Each notebook can be viewed on this website, opened directly in Google Colab, or downloaded from the <a href="https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning/tree/main/Codes">GitHub repository</a>.</p>
+<section id="adversarial-attacks-and-defenses" class="level2">
+<h2 class="anchored" data-anchor-id="adversarial-attacks-and-defenses">Adversarial Attacks and Defenses</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 75%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Notebook</th>
+<th style="text-align: center;">Open in Colab</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="../Codes/FGSM_Function_TensorFlow.html">FGSM Attack in TensorFlow</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/FGSM_Function_TensorFlow.ipynb">Colab</a></td>
+</tr>
+<tr class="even">
+<td><a href="../Codes/White_Box_Evasion_Attacks_TensorFlow.html">White-box Evasion Attacks in TensorFlow</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/White_Box_Evasion_Attacks_TensorFlow.ipynb">Colab</a></td>
+</tr>
+<tr class="odd">
+<td><a href="../Codes/White_Box_Evasion_Attacks_PyTorch.html">White-box Evasion Attacks in PyTorch</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/White_Box_Evasion_Attacks_PyTorch.ipynb">Colab</a></td>
+</tr>
+<tr class="even">
+<td><a href="../Codes/Black-box_Boundary_Attack.html">Black-box Boundary Attack</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Black-box_Boundary_Attack.ipynb">Colab</a></td>
+</tr>
+<tr class="odd">
+<td><a href="../Codes/LLM_Supervised_Finetuning.html">LLM Supervised Fine-tuning</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/LLM_Supervised_Finetuning.ipynb">Colab</a></td>
+</tr>
+<tr class="even">
+<td><a href="../Codes/Jailbreak_Attacks.html">Jailbreak Attacks on LLMs</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Jailbreak_Attacks.ipynb">Colab</a></td>
+</tr>
+<tr class="odd">
+<td><a href="../Codes/Adversarial_Training.html">Adversarial Training</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Adversarial_Training.ipynb">Colab</a></td>
+</tr>
+<tr class="even">
+<td><a href="../Codes/Intrusion_Detection_Attack.html">Attack on Network Intrusion Detection</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Intrusion_Detection_Attack.ipynb">Colab</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="hello-world-of-ml" class="level2">
+<h2 class="anchored" data-anchor-id="hello-world-of-ml">Hello World of ML</h2>
+<p>Introductory examples of training and evaluating machine learning models, from classical models on tabular data to fine-tuning large language models and vision-language models. A one-page overview is available as a <a href="Hello_World_of_ML/Hello_World_of_ML.pdf" target="_blank">PDF</a>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 75%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Notebook</th>
+<th style="text-align: center;">Open in Colab</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="../Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.html">Logistic Regression on Iris</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.ipynb">Colab</a></td>
+</tr>
+<tr class="even">
+<td><a href="../Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.html">Random Forest on Breast Cancer</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.ipynb">Colab</a></td>
+</tr>
+<tr class="odd">
+<td><a href="../Codes/Hello_World_of_ML/XGBoost_on_Titanic.html">XGBoost on Titanic</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/XGBoost_on_Titanic.ipynb">Colab</a></td>
+</tr>
+<tr class="even">
+<td><a href="../Codes/Hello_World_of_ML/MLPs_on_MNIST.html">MLPs on MNIST</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/MLPs_on_MNIST.ipynb">Colab</a></td>
+</tr>
+<tr class="odd">
+<td><a href="../Codes/Hello_World_of_ML/ResNet_on_CIFAR10.html">ResNet on CIFAR-10</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/ResNet_on_CIFAR10.ipynb">Colab</a></td>
+</tr>
+<tr class="even">
+<td><a href="../Codes/Hello_World_of_ML/DistilBERT_on_IMDb.html">DistilBERT on IMDb</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/DistilBERT_on_IMDb.ipynb">Colab</a></td>
+</tr>
+<tr class="odd">
+<td><a href="../Codes/Hello_World_of_ML/Llama2_on_Alpaca.html">Llama 2 on Alpaca</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/Llama2_on_Alpaca.ipynb">Colab</a></td>
+</tr>
+<tr class="even">
+<td><a href="../Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.html">Qwen3 GRPO on MATH-500</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.ipynb">Colab</a></td>
+</tr>
+<tr class="odd">
+<td><a href="../Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.html">VLM Reasoning and Tool Use on MATH-500</a></td>
+<td style="text-align: center;"><a href="https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.ipynb">Colab</a></td>
+</tr>
+</tbody>
+</table>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1029,6 +1480,9 @@ document.addEventListener("DOMContentLoaded", function () {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../Codes/FGSM_Function_TensorFlow.html" class="pagination-link" aria-label="FGSM Attack in TensorFlow">
+        <span class="nav-page-text">FGSM Attack in TensorFlow</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
