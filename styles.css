@@ -1,0 +1,85 @@
+/* Main content panel: 16px instead of Quarto's 17px default.
+   Scoped to the document body so the sidebar keeps its size. */
+#quarto-document-content {
+  font-size: 16px;
+}
+
+/* Notebook in-page anchors: keep the jump target clear of the navbar */
+#quarto-document-content a[id] {
+  scroll-margin-top: 4rem;
+}
+
+/* Right-pane table of contents: nested subsection titles noticeably
+   smaller than top-level section titles */
+#TOC ul ul {
+  font-size: 0.8em;
+}
+
+/* Expand/collapse arrows added to TOC entries by toc-arrows.html */
+.toc-chevron {
+  display: inline-block;
+  cursor: pointer;
+  margin-left: 0.3em;
+  padding: 0 0.35em;
+  border-radius: 0.25rem;
+  color: var(--bs-primary);
+  transition: transform 0.2s ease, background-color 0.15s ease;
+  user-select: none;
+}
+.toc-chevron:hover {
+  background-color: rgba(52, 89, 230, 0.12);
+}
+.toc-chevron::before {
+  content: "\25B8"; /* small right-pointing triangle */
+}
+.toc-chevron-expanded {
+  transform: rotate(90deg);
+}
+
+/* Sidebar header: GitHub (and other) tool icons on their own line,
+   centered below the course name */
+#quarto-sidebar .sidebar-title .sidebar-tools-main {
+  display: block;
+  margin-top: 0.4rem;
+}
+
+/* Top-level sidebar entries (Course Information, Lecture 1, Theme sections, Tutorials):
+   bold + theme blue. Nested lecture/tutorial links keep the default style. */
+#quarto-sidebar .sidebar-menu-container > ul > li > .sidebar-item-container > .sidebar-link {
+  font-weight: 700;
+  color: var(--bs-primary);
+}
+
+/* Keep the section collapse chevron matching the header color */
+#quarto-sidebar .sidebar-menu-container > ul > li > .sidebar-item-container > .sidebar-item-toggle {
+  color: var(--bs-primary);
+}
+
+/* Course schedule table (index.qmd). Each Topics cell stacks three levels:
+   a theme label, the lecture/tutorial titles, and their subtopics. Bold is
+   reserved for the titles, so the theme label and subtopics are set apart by
+   size and color instead of weight. --bs-secondary-color is supplied by
+   Bootstrap and already differs between the light and dark stylesheets. */
+.schedule td {
+  line-height: 1.45;
+}
+
+/* Theme label: small uppercase heading above the lectures it groups */
+.schedule .theme {
+  display: inline-block;
+  margin-top: 0.45em;
+  font-size: 0.78em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+}
+.schedule td > .theme:first-child {
+  margin-top: 0;
+}
+
+/* Subtopics: lighter and smaller than the title they describe */
+.schedule td em {
+  font-size: 0.92em;
+  color: var(--bs-secondary-color);
+}
