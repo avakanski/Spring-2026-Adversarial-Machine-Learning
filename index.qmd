@@ -13,6 +13,8 @@ Semester: Spring 2026 (January 14 – May 15)
 
 Credit Hours: 3
 
+*Instructor website*: <https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning.html>
+
 *Course website*: <https://avakanski.github.io/Spring-2026-Adversarial-Machine-Learning/>
 
 *GitHub repository*: <https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning>

@@ -10,6 +10,8 @@ Office Hours: Fridays, 12:00 PM – 1:00 PM Pacific (1:00 PM – 2:00 PM Mountai
 
 <a href="Lectures/CS_4727_5727-Adversarial_Machine_Learning-Syllabus.pdf">Course Syllabus</a>
 
+*Instructor website*: <https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning.html>
+
 *Course website*: <https://avakanski.github.io/Spring-2026-Adversarial-Machine-Learning/>
 
 *GitHub repository*: <https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning>
