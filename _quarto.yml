@@ -28,6 +28,8 @@ website:
       - section: "Course Information"
         href: index.qmd
         contents:
+          - href: index.qmd#previous-offerings
+            text: "Previous Offerings"
           - href: index.qmd#course-syllabus
             text: "Syllabus"
           - href: index.qmd#course-description
@@ -42,8 +44,6 @@ website:
             text: "Grading"
           - href: index.qmd#course-schedule
             text: "Course Schedule"
-          - href: index.qmd#previous-offerings
-            text: "Previous Offerings"
       - href: Lectures/Lecture_1-Introduction_to_AML/Lecture_1-Introduction_to_AML.qmd
         text: "Lecture 1 - Introduction to AML"
       - section: "Theme 1 - Foundations"

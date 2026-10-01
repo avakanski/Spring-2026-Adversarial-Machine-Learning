@@ -17,6 +17,10 @@ Credit Hours: 3
 
 *GitHub repository*: <https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning>
 
+## Previous Offerings
+
+Course materials from previous years are available on the instructor's website: [Spring 2025](https://www.idahofallshighered.org/vakanski/Courses/AML_Course_Spring_2025.html), [Spring 2024](https://www.idahofallshighered.org/vakanski/Courses/AML_Course_Spring_2024.html), [Spring 2023](https://www.idahofallshighered.org/vakanski/Courses/CS_504_Spring_2023.html).
+
 ## Course Syllabus
 
 [View Syllabus](Lectures/CS_4727_5727-Adversarial_Machine_Learning-Syllabus.pdf){target="_blank"}
@@ -92,6 +96,3 @@ The schedule below is tentative and lists the topics covered each week. Lecture 
 
 :::
 
-## Previous Offerings
-
-Course materials from previous years are available on the instructor's website: [Spring 2025](https://www.idahofallshighered.org/vakanski/Courses/AML_Course_Spring_2025.html), [Spring 2024](https://www.idahofallshighered.org/vakanski/Courses/AML_Course_Spring_2024.html), [Spring 2023](https://www.idahofallshighered.org/vakanski/Courses/CS_504_Spring_2023.html).
