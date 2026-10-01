@@ -24,7 +24,9 @@ Lectures/
     Lecture_1-Introduction_to_AML.qmd
   Lecture_2-.../ ... Lecture_15-.../   (flat: no theme folders, see note below)
 Codes/
-  Code_Examples.qmd         landing page for notebooks (add notebooks next to it)
+  Code_Examples.qmd         landing page listing every notebook (keep in sync)
+  *.ipynb                   AML attack/defense notebooks (flat, one file each)
+  Hello_World_of_ML/        introductory ML notebooks + Hello_World_of_ML.pdf
 ```
 
 Lecture numbering on the site (1–15) follows the topic list on the
@@ -48,8 +50,11 @@ references the name in both the link and the iframe). Then commit and push.
 ## Adding a code notebook
 
 1. Put the executed notebook (outputs saved — `execute: enabled: false` means
-   the build never runs code) in `Codes/Code_N-Short_Title/Code_N-Short_Title.ipynb`,
-   with any images in an `images/` subfolder.
+   the build never runs code) directly in `Codes/` (or `Codes/Hello_World_of_ML/`).
+   Source notebooks come from `C:\Users\vakanski\Desktop\Codes`; before copying,
+   delete `metadata.widgets` if it has no `state` key (empty Colab widget blocks
+   fail nbformat validation and break the Quarto build), and make sure the first
+   markdown cell is a descriptive `# Title` (Quarto uses it as the page title).
 2. Add a sidebar entry under the "Code Examples" section in `_quarto.yml`,
    link it from `Codes/Code_Examples.qmd`, and list it in `README.md`.
 3. Optional header badges (first markdown cell), replacing `<PATH>` with the

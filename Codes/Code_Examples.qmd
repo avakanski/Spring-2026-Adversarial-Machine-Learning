@@ -3,17 +3,39 @@ title: "Code Examples"
 toc: false
 ---
 
-This section collects Jupyter notebooks with Python implementations of the adversarial attacks and defenses covered in the lectures. The notebooks accompany the lecture slides and serve as starting points for the homework assignments and the course project.
+This section collects Jupyter notebooks with Python implementations of the adversarial attacks and defenses covered in the lectures. The notebooks accompany the lecture slides and serve as starting points for the homework assignments and the course project. Students are encouraged to use the GPUs provided by Google Colab for running the notebooks.
 
-Notebooks will be posted here as they become available. Each notebook can be viewed on this website, opened directly in Google Colab, or downloaded from the [GitHub repository](https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning).
+Each notebook can be viewed on this website, opened directly in Google Colab, or downloaded from the [GitHub repository](https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning/tree/main/Codes).
 
-Planned examples:
+## Adversarial Attacks and Defenses
 
-* White-box evasion attacks: Fast Gradient Sign Method (FGSM), Projected Gradient Descent (PGD), and Carlini-Wagner (C&W) attacks
-* Black-box evasion attacks: transfer-based and query-based attacks
-* Adversarial training and other defenses against evasion attacks
-* Data poisoning and backdoor attacks
-* Membership inference attacks and differentially private training
-* Jailbreak and prompt injection attacks on large language models
+| Notebook | Open in Colab |
+|----------|:-------------:|
+| [FGSM Attack in TensorFlow](FGSM_Function_TensorFlow.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/FGSM_Function_TensorFlow.ipynb) |
+| [White-box Evasion Attacks in TensorFlow](White_Box_Evasion_Attacks_TensorFlow.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/White_Box_Evasion_Attacks_TensorFlow.ipynb) |
+| [White-box Evasion Attacks in PyTorch](White_Box_Evasion_Attacks_PyTorch.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/White_Box_Evasion_Attacks_PyTorch.ipynb) |
+| [Black-box Boundary Attack](Black-box_Boundary_Attack.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Black-box_Boundary_Attack.ipynb) |
+| [LLM Supervised Fine-tuning](LLM_Supervised_Finetuning.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/LLM_Supervised_Finetuning.ipynb) |
+| [Jailbreak Attacks on LLMs](Jailbreak_Attacks.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Jailbreak_Attacks.ipynb) |
+| [Adversarial Training](Adversarial_Training.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Adversarial_Training.ipynb) |
+| [Attack on Network Intrusion Detection](Intrusion_Detection_Attack.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Intrusion_Detection_Attack.ipynb) |
 
-Students are encouraged to use the GPUs provided by Google Colab for running the notebooks.
+: {tbl-colwidths="[75,25]"}
+
+## Hello World of ML
+
+Introductory examples of training and evaluating machine learning models, from classical models on tabular data to fine-tuning large language models and vision-language models. A one-page overview is available as a [PDF](Hello_World_of_ML/Hello_World_of_ML.pdf){target="_blank"}.
+
+| Notebook | Open in Colab |
+|----------|:-------------:|
+| [Logistic Regression on Iris](Hello_World_of_ML/Logistic_Regression_on_Iris.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.ipynb) |
+| [Random Forest on Breast Cancer](Hello_World_of_ML/Random_Forest_on_Breast_Cancer.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.ipynb) |
+| [XGBoost on Titanic](Hello_World_of_ML/XGBoost_on_Titanic.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/XGBoost_on_Titanic.ipynb) |
+| [MLPs on MNIST](Hello_World_of_ML/MLPs_on_MNIST.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/MLPs_on_MNIST.ipynb) |
+| [ResNet on CIFAR-10](Hello_World_of_ML/ResNet_on_CIFAR10.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/ResNet_on_CIFAR10.ipynb) |
+| [DistilBERT on IMDb](Hello_World_of_ML/DistilBERT_on_IMDb.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/DistilBERT_on_IMDb.ipynb) |
+| [Llama 2 on Alpaca](Hello_World_of_ML/Llama2_on_Alpaca.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/Llama2_on_Alpaca.ipynb) |
+| [Qwen3 GRPO on MATH-500](Hello_World_of_ML/Qwen3_GRPO_on_MATH500.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.ipynb) |
+| [VLM Reasoning and Tool Use on MATH-500](Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.ipynb) | [Colab](https://colab.research.google.com/github/avakanski/Spring-2026-Adversarial-Machine-Learning/blob/main/Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.ipynb) |
+
+: {tbl-colwidths="[75,25]"}

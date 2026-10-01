@@ -56,7 +56,31 @@ Each lecture is provided as a PDF in this repository; the PowerPoint versions of
 
 ## Code Examples
 
-Jupyter notebooks with implementations of the studied attacks and defenses are collected in the `Codes` folder and listed on the [Code Examples](https://avakanski.github.io/Spring-2026-Adversarial-Machine-Learning/Codes/Code_Examples.html) page of the course website.
+Jupyter notebooks with implementations of the studied attacks and defenses. Each notebook can be viewed on the [course website](https://avakanski.github.io/Spring-2026-Adversarial-Machine-Learning/Codes/Code_Examples.html) or opened in Google Colab.
+
+* <a href="Codes/FGSM_Function_TensorFlow.ipynb">FGSM Attack in TensorFlow</a>
+* <a href="Codes/White_Box_Evasion_Attacks_TensorFlow.ipynb">White-box Evasion Attacks in TensorFlow</a>
+* <a href="Codes/White_Box_Evasion_Attacks_PyTorch.ipynb">White-box Evasion Attacks in PyTorch</a>
+* <a href="Codes/Black-box_Boundary_Attack.ipynb">Black-box Boundary Attack</a>
+* <a href="Codes/LLM_Supervised_Finetuning.ipynb">LLM Supervised Fine-tuning</a>
+* <a href="Codes/Jailbreak_Attacks.ipynb">Jailbreak Attacks on LLMs</a>
+* <a href="Codes/Adversarial_Training.ipynb">Adversarial Training</a>
+* <a href="Codes/Intrusion_Detection_Attack.ipynb">Attack on Network Intrusion Detection</a>
+
+### Hello World of ML
+
+Introductory examples of training and evaluating machine learning models, from logistic regression to fine-tuning large language models.
+
+* <a href="Codes/Hello_World_of_ML/Hello_World_of_ML.pdf">Hello World of ML - Overview (PDF)</a>
+* <a href="Codes/Hello_World_of_ML/Logistic_Regression_on_Iris.ipynb">Logistic Regression on Iris</a>
+* <a href="Codes/Hello_World_of_ML/Random_Forest_on_Breast_Cancer.ipynb">Random Forest on Breast Cancer</a>
+* <a href="Codes/Hello_World_of_ML/XGBoost_on_Titanic.ipynb">XGBoost on Titanic</a>
+* <a href="Codes/Hello_World_of_ML/MLPs_on_MNIST.ipynb">MLPs on MNIST</a>
+* <a href="Codes/Hello_World_of_ML/ResNet_on_CIFAR10.ipynb">ResNet on CIFAR-10</a>
+* <a href="Codes/Hello_World_of_ML/DistilBERT_on_IMDb.ipynb">DistilBERT on IMDb</a>
+* <a href="Codes/Hello_World_of_ML/Llama2_on_Alpaca.ipynb">Llama 2 on Alpaca</a>
+* <a href="Codes/Hello_World_of_ML/Qwen3_GRPO_on_MATH500.ipynb">Qwen3 GRPO on MATH-500</a>
+* <a href="Codes/Hello_World_of_ML/VLM_Reasoning_ToolUse_on_MATH500.ipynb">VLM Reasoning and Tool Use on MATH-500</a>
 
 ## Course Description
 
