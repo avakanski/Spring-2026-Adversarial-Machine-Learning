@@ -1,0 +1,8 @@
+---
+title: "Lecture 7 - Adversarial Attacks on Large Language Models"
+toc: false
+---
+
+[Click to Open the Lecture in a New Window](Lecture_7-Adversarial_Attacks_on_LLMs.pdf){target="_blank"} | [Download the PowerPoint Slides](https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning/Spring_2026/Lecture_7_Adversarial_Attacks_on_LLMs.pptx)
+
+<iframe src="Lecture_7-Adversarial_Attacks_on_LLMs.pdf" width="100%" height="800" style="border: none;"></iframe>

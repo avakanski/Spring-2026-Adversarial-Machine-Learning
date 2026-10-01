@@ -1,0 +1,8 @@
+---
+title: "Lecture 10 - Adversarial ML in Cybersecurity: Network Intrusion Detection"
+toc: false
+---
+
+[Click to Open the Lecture in a New Window](Lecture_10-AML_in_Network_Intrusion_Detection.pdf){target="_blank"} | [Download the PowerPoint Slides](https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning/Spring_2026/Lecture_10_AML_in_Network_Intrusion_Detection.pptx)
+
+<iframe src="Lecture_10-AML_in_Network_Intrusion_Detection.pdf" width="100%" height="800" style="border: none;"></iframe>

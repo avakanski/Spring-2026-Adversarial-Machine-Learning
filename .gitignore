@@ -1,0 +1,13 @@
+/.quarto/
+/_site/
+*.quarto_ipynb
+
+# Python
+__pycache__/
+.ipynb_checkpoints/
+
+# OS
+Thumbs.db
+.DS_Store
+
+**/*.quarto_ipynb

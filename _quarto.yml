@@ -1,0 +1,116 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "**/*.qmd"
+    - "**/*.ipynb"
+  resources:
+    - "Lectures/**/*.pdf"
+
+website:
+  title: "Adversarial Machine Learning"
+  description: "CS 4727/5727 - Adversarial Machine Learning, University of Idaho, Spring 2026"
+  site-url: https://avakanski.github.io/Spring-2026-Adversarial-Machine-Learning/
+  repo-url: https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning
+  page-navigation: true
+  sidebar:
+    style: docked
+    background: "#D9E3E4"
+    pinned: true
+    align: center
+    search: true
+    collapse-level: 2
+    tools:
+      - icon: github
+        href: https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning
+        text: GitHub repository
+    contents:
+      - section: "Course Information"
+        href: index.qmd
+        contents:
+          - href: index.qmd#course-syllabus
+            text: "Syllabus"
+          - href: index.qmd#course-description
+            text: "Course Description"
+          - href: index.qmd#textbooks
+            text: "Textbooks"
+          - href: index.qmd#learning-outcomes
+            text: "Learning Outcomes"
+          - href: index.qmd#prerequisites
+            text: "Prerequisites"
+          - href: index.qmd#grading
+            text: "Grading"
+          - href: index.qmd#course-schedule
+            text: "Course Schedule"
+          - href: index.qmd#previous-offerings
+            text: "Previous Offerings"
+      - href: Lectures/Lecture_1-Introduction_to_AML/Lecture_1-Introduction_to_AML.qmd
+        text: "Lecture 1 - Introduction to AML"
+      - section: "Theme 1 - Foundations"
+        contents:
+          - href: Lectures/Lecture_2-Deep_Learning_Overview/Lecture_2-Deep_Learning_Overview.qmd
+            text: "Lecture 2 - Deep Learning Overview"
+          - href: Lectures/Lecture_3-Mathematics_for_ML/Lecture_3-Mathematics_for_ML.qmd
+            text: "Lecture 3 - Mathematics for Machine Learning"
+      - section: "Theme 2 - Evasion Attacks"
+        contents:
+          - href: Lectures/Lecture_4-White-box_Evasion_Attacks/Lecture_4-White-box_Evasion_Attacks.qmd
+            text: "Lecture 4 - White-box Evasion Attacks"
+          - href: Lectures/Lecture_5-Black-box_Evasion_Attacks/Lecture_5-Black-box_Evasion_Attacks.qmd
+            text: "Lecture 5 - Black-box Evasion Attacks"
+      - section: "Theme 3 - Large Language Models"
+        contents:
+          - href: Lectures/Lecture_6-Introduction_to_LLMs/Lecture_6-Introduction_to_LLMs.qmd
+            text: "Lecture 6 - Introduction to LLMs"
+          - href: Lectures/Lecture_7-Adversarial_Attacks_on_LLMs/Lecture_7-Adversarial_Attacks_on_LLMs.qmd
+            text: "Lecture 7 - Adversarial Attacks on LLMs"
+      - section: "Theme 4 - Defenses and Poisoning Attacks"
+        contents:
+          - href: Lectures/Lecture_8-Defenses_Against_Evasion_Attacks/Lecture_8-Defenses_Against_Evasion_Attacks.qmd
+            text: "Lecture 8 - Defenses Against Evasion Attacks"
+          - href: Lectures/Lecture_9-Poisoning_Attacks_and_Defenses/Lecture_9-Poisoning_Attacks_and_Defenses.qmd
+            text: "Lecture 9 - Poisoning Attacks and Defenses"
+      - section: "Theme 5 - AML in Cybersecurity"
+        contents:
+          - href: Lectures/Lecture_10-AML_in_Network_Intrusion_Detection/Lecture_10-AML_in_Network_Intrusion_Detection.qmd
+            text: "Lecture 10 - Network Intrusion Detection"
+          - href: Lectures/Lecture_11-AML_in_Malware_Detection/Lecture_11-AML_in_Malware_Detection.qmd
+            text: "Lecture 11 - Malware Detection and Classification"
+          - href: "Lectures/Lecture_12-AML_in_Spam_Filtering_URL_Detection_CPS/Lecture_12-AML_in_Spam_Filtering_URL_Detection_CPS.qmd"
+            text: "Lecture 12 - Spam Filtering, URL Detection, Cyber-physical Systems"
+      - section: "Theme 6 - Privacy, Explainability, Fairness"
+        contents:
+          - href: "Lectures/Lecture_13-Privacy_Attacks_and_Defenses/Lecture_13-Privacy_Attacks_and_Defenses.qmd"
+            text: "Lecture 13 - Privacy Attacks and Defenses"
+          - href: "Lectures/Lecture_14-Explainability_in_ML/Lecture_14-Explainability_in_ML.qmd"
+            text: "Lecture 14 - Explainability in Machine Learning"
+          - href: "Lectures/Lecture_15-Bias_and_Fairness_in_ML/Lecture_15-Bias_and_Fairness_in_ML.qmd"
+            text: "Lecture 15 - Bias and Fairness in Machine Learning"
+      - section: "Code Examples"
+        href: Codes/Code_Examples.qmd
+        contents:
+          - href: Codes/Code_Examples.qmd
+            text: "Overview"
+  page-footer:
+    center: "CS 4727/5727 - Adversarial Machine Learning, University of Idaho, Spring 2026"
+    background: "#D9E3E4"
+
+format:
+  html:
+    theme:
+      light: [cosmo, theme.scss]
+      dark: [cosmo, theme-dark.scss]
+    mainfont: "Atkinson Hyperlegible"
+    css: styles.css
+    include-after-body: toc-arrows.html
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    grid:
+      body-width: 1000px
+      sidebar-width: 360px
+
+# Notebooks are rendered from their saved outputs; never execute them during builds
+execute:
+  enabled: false

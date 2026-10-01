@@ -1,0 +1,31 @@
+/*-- scss:defaults --*/
+
+// Dark mode palette, adapted from the STA 210 course theme
+@import 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap';
+
+// Base document colors
+$body-bg: #181818;
+$body-color: white;
+$link-color: #75AADB;
+
+$light: #525252;
+
+// Navigation element colors
+$footer-bg: #181818;
+$sidebar-bg: #303030;
+
+// Code blocks
+$code-block-bg-alpha: -.8;
+
+// Bootstrap popovers
+$popover-bg: #242424;
+
+// Bootstrap inputs
+$input-bg: #242424;
+
+/*-- scss:rules --*/
+
+.sidebar-header .sidebar-title {
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}

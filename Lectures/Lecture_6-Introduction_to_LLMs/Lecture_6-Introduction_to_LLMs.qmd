@@ -1,0 +1,8 @@
+---
+title: "Lecture 6 - Introduction to Large Language Models"
+toc: false
+---
+
+[Click to Open the Lecture in a New Window](Lecture_6-Introduction_to_LLMs.pdf){target="_blank"} | [Download the PowerPoint Slides](https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning/Spring_2026/Lecture_6_Introduction_to_LLMs.pptx)
+
+<iframe src="Lecture_6-Introduction_to_LLMs.pdf" width="100%" height="800" style="border: none;"></iframe>

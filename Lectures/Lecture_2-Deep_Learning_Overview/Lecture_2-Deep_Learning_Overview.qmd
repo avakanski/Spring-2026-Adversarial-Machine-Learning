@@ -1,0 +1,8 @@
+---
+title: "Lecture 2 - Deep Learning Overview"
+toc: false
+---
+
+[Click to Open the Lecture in a New Window](Lecture_2-Deep_Learning_Overview.pdf){target="_blank"} | [Download the PowerPoint Slides](https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning/Spring_2026/Lecture_2_Deep_Learning_Overview.pptx)
+
+<iframe src="Lecture_2-Deep_Learning_Overview.pdf" width="100%" height="800" style="border: none;"></iframe>

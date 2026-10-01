@@ -1,0 +1,8 @@
+---
+title: "Lecture 13 - Privacy Attacks and Defenses"
+toc: false
+---
+
+[Click to Open the Lecture in a New Window](Lecture_13-Privacy_Attacks_and_Defenses.pdf){target="_blank"} | [Download the PowerPoint Slides](https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning/Spring_2026/Lecture_11_Privacy_Attacks_and_Defenses.pptx)
+
+<iframe src="Lecture_13-Privacy_Attacks_and_Defenses.pdf" width="100%" height="800" style="border: none;"></iframe>

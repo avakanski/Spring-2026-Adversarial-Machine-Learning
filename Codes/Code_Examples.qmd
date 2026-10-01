@@ -1,0 +1,19 @@
+---
+title: "Code Examples"
+toc: false
+---
+
+This section collects Jupyter notebooks with Python implementations of the adversarial attacks and defenses covered in the lectures. The notebooks accompany the lecture slides and serve as starting points for the homework assignments and the course project.
+
+Notebooks will be posted here as they become available. Each notebook can be viewed on this website, opened directly in Google Colab, or downloaded from the [GitHub repository](https://github.com/avakanski/Spring-2026-Adversarial-Machine-Learning).
+
+Planned examples:
+
+* White-box evasion attacks: Fast Gradient Sign Method (FGSM), Projected Gradient Descent (PGD), and Carlini-Wagner (C&W) attacks
+* Black-box evasion attacks: transfer-based and query-based attacks
+* Adversarial training and other defenses against evasion attacks
+* Data poisoning and backdoor attacks
+* Membership inference attacks and differentially private training
+* Jailbreak and prompt injection attacks on large language models
+
+Students are encouraged to use the GPUs provided by Google Colab for running the notebooks.

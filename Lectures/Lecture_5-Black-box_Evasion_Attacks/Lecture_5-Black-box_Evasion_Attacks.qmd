@@ -1,0 +1,8 @@
+---
+title: "Lecture 5 - Black-box Evasion Attacks"
+toc: false
+---
+
+[Click to Open the Lecture in a New Window](Lecture_5-Black-box_Evasion_Attacks.pdf){target="_blank"} | [Download the PowerPoint Slides](https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning/Spring_2026/Lecture_5_Black_Box_Evasion_Attacks.pptx)
+
+<iframe src="Lecture_5-Black-box_Evasion_Attacks.pdf" width="100%" height="800" style="border: none;"></iframe>

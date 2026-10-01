@@ -1,0 +1,8 @@
+---
+title: "Lecture 8 - Defenses Against Evasion Attacks"
+toc: false
+---
+
+[Click to Open the Lecture in a New Window](Lecture_8-Defenses_Against_Evasion_Attacks.pdf){target="_blank"} | [Download the PowerPoint Slides](https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning/Spring_2026/Lecture_8_Defenses_against_Evasion_Attacks.pptx)
+
+<iframe src="Lecture_8-Defenses_Against_Evasion_Attacks.pdf" width="100%" height="800" style="border: none;"></iframe>

@@ -1,0 +1,8 @@
+---
+title: "Lecture 1 - Introduction to Adversarial Machine Learning"
+toc: false
+---
+
+[Click to Open the Lecture in a New Window](Lecture_1-Introduction_to_AML.pdf){target="_blank"} | [Download the PowerPoint Slides](https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning/Spring_2026/Lecture_1_Introduction_to_Adversarial_Machine_Learning.pptx)
+
+<iframe src="Lecture_1-Introduction_to_AML.pdf" width="100%" height="800" style="border: none;"></iframe>

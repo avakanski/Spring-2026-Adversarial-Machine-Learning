@@ -1,0 +1,8 @@
+---
+title: "Lecture 15 - Bias and Fairness in Machine Learning"
+toc: false
+---
+
+[Click to Open the Lecture in a New Window](Lecture_15-Bias_and_Fairness_in_ML.pdf){target="_blank"} | [Download the PowerPoint Slides](https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning/Spring_2026/Lecture_13_Bias_and_Fairness_in_ML.pptx)
+
+<iframe src="Lecture_15-Bias_and_Fairness_in_ML.pdf" width="100%" height="800" style="border: none;"></iframe>

@@ -1,0 +1,12 @@
+/*-- scss:defaults --*/
+
+// Font used across the site (same as STA 210's theme)
+@import 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap';
+
+/*-- scss:rules --*/
+
+// Center and space the sidebar header (site title above the search box)
+.sidebar-header .sidebar-title {
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}

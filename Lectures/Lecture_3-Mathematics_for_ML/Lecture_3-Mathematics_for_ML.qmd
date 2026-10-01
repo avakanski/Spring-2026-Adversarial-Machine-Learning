@@ -1,0 +1,8 @@
+---
+title: "Lecture 3 - Mathematics for Machine Learning"
+toc: false
+---
+
+[Click to Open the Lecture in a New Window](Lecture_3-Mathematics_for_ML.pdf){target="_blank"} | [Download the PowerPoint Slides](https://www.idahofallshighered.org/vakanski/Courses/Adversarial_Machine_Learning/Spring_2026/Lecture_3_Mathematics_for_Machine_Learning.pptx)
+
+<iframe src="Lecture_3-Mathematics_for_ML.pdf" width="100%" height="800" style="border: none;"></iframe>
