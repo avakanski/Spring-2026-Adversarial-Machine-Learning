@@ -27,7 +27,7 @@
   user-select: none;
 }
 .toc-chevron:hover {
-  background-color: rgba(52, 89, 230, 0.12);
+  background-color: color-mix(in srgb, var(--bs-primary) 14%, transparent);
 }
 .toc-chevron::before {
   content: "\25B8"; /* small right-pointing triangle */
