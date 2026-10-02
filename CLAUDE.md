@@ -73,8 +73,8 @@ references the name in both the link and the iframe). Then commit and push.
 ## Site-wide conventions (don't break these)
 
 - Theme: `cosmo` + `theme.scss` / `theme-dark.scss`; Inter body, Source Serif 4
-  headings, JetBrains Mono code; burgundy `#8C1D40` accent with warm-stone
-  `#F3EEE7` sidebar/footer (set in the scss files, not `_quarto.yml`), no top navbar.
+  headings, JetBrains Mono code; navy `#1E3A5F` accent, gold `#B3A369` heading
+  rules, light-sand `#F5F2E8` sidebar/footer (set in the scss files, not `_quarto.yml`), no top navbar.
 - `styles.css`: bold accent-colored top-level sidebar entries, 16px main content,
   schedule-table styling (`.schedule`, `.theme` labels, italic subtopics).
 - `toc-arrows.html` (included on every page): expand/collapse arrows in the
