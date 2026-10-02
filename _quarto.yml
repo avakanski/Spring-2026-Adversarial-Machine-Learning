@@ -16,7 +16,6 @@ website:
   page-navigation: true
   sidebar:
     style: docked
-    background: "#D9E3E4"
     pinned: true
     align: center
     search: true
@@ -132,14 +131,12 @@ website:
                 text: "VLM Reasoning and Tool Use on MATH-500"
   page-footer:
     center: "CS 4727/5727 - Adversarial Machine Learning, University of Idaho, Spring 2026"
-    background: "#D9E3E4"
 
 format:
   html:
     theme:
       light: [cosmo, theme.scss]
       dark: [cosmo, theme-dark.scss]
-    mainfont: "Atkinson Hyperlegible"
     css: styles.css
     include-after-body: toc-arrows.html
     toc: true

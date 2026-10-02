@@ -1,31 +1,48 @@
 /*-- scss:defaults --*/
 
-// Dark mode palette, adapted from the STA 210 course theme
-@import 'https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap';
+// Fonts: Inter for body text, Source Serif 4 for headings, JetBrains Mono for code
+@import 'https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;600&display=swap';
 
-// Base document colors
-$body-bg: #181818;
-$body-color: white;
-$link-color: #75AADB;
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+$headings-font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+$font-family-monospace: "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+$headings-font-weight: 700;
 
-$light: #525252;
+// Dark palette: rose accents on warm charcoal
+$primary: #F08DAA;
+$secondary: #A9A3B0;
+$body-bg: #17151A;
+$body-color: #ECE8EF;
+$headings-color: #F6DDE5;
+$link-color: #F08DAA;
+$link-hover-color: #F7B7CA;
+
+$light: #4A4450;
 
 // Navigation element colors
-$footer-bg: #181818;
-$sidebar-bg: #303030;
+$sidebar-bg: #241F27;
+$sidebar-fg: #DCD6E0;
+$footer-bg: #17151A;
 
 // Code blocks
 $code-block-bg-alpha: -.8;
+$code-color: #F08DAA;
 
 // Bootstrap popovers
-$popover-bg: #242424;
+$popover-bg: #241F27;
 
 // Bootstrap inputs
-$input-bg: #242424;
+$input-bg: #241F27;
 
 /*-- scss:rules --*/
 
 .sidebar-header .sidebar-title {
   margin-top: 0.25rem;
   margin-bottom: 0.5rem;
+  font-family: $headings-font-family;
+}
+
+#quarto-document-content h2 {
+  border-bottom: 2px solid rgba($primary, 0.25);
+  padding-bottom: 0.25rem;
 }
