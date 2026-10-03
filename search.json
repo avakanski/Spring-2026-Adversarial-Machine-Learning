@@ -730,7 +730,7 @@
     "href": "Codes/Code_Examples.html#hello-world-of-ml",
     "title": "Code Examples",
     "section": "Hello World of ML",
-    "text": "Hello World of ML\nIntroductory examples of training and evaluating machine learning models, from classical models on tabular data to fine-tuning large language models and vision-language models. A one-page overview is available as a PDF.\n\n\n\n\n\n\n\nNotebook\nOpen in Colab\n\n\n\n\nLogistic Regression on Iris\nColab\n\n\nRandom Forest on Breast Cancer\nColab\n\n\nXGBoost on Titanic\nColab\n\n\nMLPs on MNIST\nColab\n\n\nResNet on CIFAR-10\nColab\n\n\nDistilBERT on IMDb\nColab\n\n\nLlama 2 on Alpaca\nColab\n\n\nQwen3 GRPO on MATH-500\nColab\n\n\nVLM Reasoning and Tool Use on MATH-500\nColab",
+    "text": "Hello World of ML\nIntroductory examples of training and evaluating machine learning models, from classical models on tabular data to fine-tuning large language models and vision-language models. A one-page overview is available as a PDF.\n\n\n\n\n\n\n\n\nYear\nNotebook\nOpen in Colab\n\n\n\n\n2005\nLogistic Regression on Iris\nColab\n\n\n2010\nRandom Forest on Breast Cancer\nColab\n\n\n2014\nXGBoost on Titanic\nColab\n\n\n2015\nMLPs on MNIST\nColab\n\n\n2018\nResNet on CIFAR-10\nColab\n\n\n2021\nDistilBERT on IMDb\nColab\n\n\n2023\nLlama 2 on Alpaca\nColab\n\n\n2025\nQwen3 GRPO on MATH-500\nColab\n\n\n2026\nVLM Reasoning and Tool Use on MATH-500\nColab",
     "crumbs": [
       "Code Examples"
     ]
